@@ -167,11 +167,15 @@ std::vector<Vector3d> vertContainer_std_Rcontour_Leye;
 std::vector<Vector3d> vertContainer_std_Rcontour_Reye;
 std::vector<Vector3d> vertContainer_std_Lcontour_Leye;
 std::vector<Vector3d> vertContainer_std_Lcontour_Reye;
+std::vector<Vector3d> vertContainer_std_Rcontour;
+std::vector<Vector3d> vertContainer_std_Lcontour;
 
 std::vector<Vector3d> vertContainer_cmp_Rcontour_Leye;
 std::vector<Vector3d> vertContainer_cmp_Rcontour_Reye;
 std::vector<Vector3d> vertContainer_cmp_Lcontour_Leye;
 std::vector<Vector3d> vertContainer_cmp_Lcontour_Reye;
+std::vector<Vector3d> vertContainer_cmp_Rcontour;
+std::vector<Vector3d> vertContainer_cmp_Lcontour;
 
 /********** STIMULUS VERTICES ***************/
 int nr_points = 201;
