@@ -15,6 +15,16 @@ void initPreviewStimulus(double textDepth, double dispDepth) {
 
 
 void buildVertices_congruent(bool isStandard, double shapeDepth, double textNormalizer) {
+
+	std::vector<GLfloat> vertices_vec;
+	std::vector<GLfloat> texcoors_vec;
+	std::vector<GLfloat> colors_vec;
+	std::vector<GLfloat> normals_vec;
+	std::vector<GLuint> indices_draw_triangle_vec;
+
+	std::vector<Vector3d> vertContainer_Rcontour_Clpeye;
+	std::vector<Vector3d> vertContainer_Lcontour_Clpeye;
+
 	
 	double step_size_width = stimulus_width / (double)(nr_points - 1);
 	double step_size_height = stimulus_height / (double)(nr_points - 1);
@@ -28,158 +38,108 @@ void buildVertices_congruent(bool isStandard, double shapeDepth, double textNorm
 
 	double normal_x, normal_y, normal_z;
 
-	double x_d_Rcontour_Leye = stimulus_visiblewidth / 2;
-	double x_d_Lcontour_Leye = -stimulus_visiblewidth / 2;
-	double x_d_Rcontour_Reye = stimulus_visiblewidth / 2;
-	double x_d_Lcontour_Reye = -stimulus_visiblewidth / 2;
+	double x_Rcontour = stimulus_visiblewidth / 2;
+	double x_Lcontour = -stimulus_visiblewidth / 2;
 	
-	if(isStandard){///////////////////////// building standard /////////////////////////
 
+	for (int j = 0; j < nr_points; j++) {  // 
+
+		y = -stimulus_height / 2 + j * step_size_height;
+		z = shapeDepth * cos(M_PI * y / stimulus_height);
+
+		total_distance_y = total_distance_y + sqrt(pow(y - y_prev, 2) + pow(z - z_prev, 2));
+		v = total_distance_y / textNormalizer + v_offset; //v coordinate
+
+		// shading should be consistent with texture depth
+		normal_x = 0;
+		normal_y = shapeDepth * sin(M_PI * y / stimulus_height) * M_PI / stimulus_height;
+		normal_z = 1;
+
+		vertContainer_Rcontour_Clpeye.push_back(Vector3d(x_Rcontour, y, z)); 
+		vertContainer_Lcontour_Clpeye.push_back(Vector3d(x_Lcontour, y, z)); 
+
+		for (int i = 0; i < nr_points; i++) { //
+
+			x = -stimulus_width / 2 + i * step_size_width;
+			u = (x + stimulus_width / 2) / textNormalizer + u_offset; //u coordinate. 
+
+			//step 1: build the meshgrid using vertices, 
+			vertices_vec.push_back(x);
+			vertices_vec.push_back(y);
+			vertices_vec.push_back(z);
+
+			colors_vec.push_back(1);
+			colors_vec.push_back(0);
+			colors_vec.push_back(0);
+
+			texcoors_vec.push_back(u);
+			texcoors_vec.push_back(v);
+
+			normals_vec.push_back(normal_x );
+			normals_vec.push_back(normal_y );
+			normals_vec.push_back(normal_z );
+
+			//step 2: create an array/vector that store how the triangles should be drawn
+
+			// construct the triangle indices to be drawn
+			if (i < nr_points - 1 && j < nr_points - 1) {
+
+				indices_draw_triangle_vec.push_back(i_ind);
+				indices_draw_triangle_vec.push_back(i_ind + 1);
+				indices_draw_triangle_vec.push_back(i_ind + nr_points);
+
+				indices_draw_triangle_vec.push_back(i_ind + nr_points);
+				indices_draw_triangle_vec.push_back(i_ind + 1);
+				indices_draw_triangle_vec.push_back(i_ind + nr_points + 1);
+				//ind = ind + 6;
+			}
+
+			i_ind++;
+		}
+
+		y_prev = y; z_prev = z;
+	}
+
+	if(isStandard){///////////////////////// building standard /////////////////////////	
+		
 		vertices_vec_std.clear();
 		colors_vec_std.clear();
 		texcoors_vec_std.clear();
 		indices_draw_triangle_vec_std.clear();
 		normals_vec_std.clear();
 
-		vertContainer_std_Rcontour_Leye.clear();
-		vertContainer_std_Rcontour_Reye.clear();
-		vertContainer_std_Lcontour_Leye.clear();
-		vertContainer_std_Lcontour_Reye.clear();
+		vertices_vec_std = vertices_vec;
+		colors_vec_std = colors_vec;
+		texcoors_vec_std = texcoors_vec;
+		indices_draw_triangle_vec_std = indices_draw_triangle_vec;
+		normals_vec_std = normals_vec;
 
-		for (int j = 0; j < nr_points; j++) {  // 
+		vertContainer_std_Rcontour.clear();
+		vertContainer_std_Lcontour.clear();
 
-			y = -stimulus_height / 2 + j * step_size_height;
-			z = shapeDepth * cos(M_PI * y / stimulus_height);
+		vertContainer_std_Rcontour = vertContainer_Rcontour_Clpeye;
+		vertContainer_std_Lcontour = vertContainer_Lcontour_Clpeye;
 
-			total_distance_y = total_distance_y + sqrt(pow(y - y_prev, 2) + pow(z - z_prev, 2));
-			v = total_distance_y / textNormalizer + v_offset; //v coordinate
+	}else{
 
-			// shading should be consistent with texture depth
-			normal_x = 0;
-			normal_y = shapeDepth * sin(M_PI * y / stimulus_height) * M_PI / stimulus_height;
-			normal_z = 1;
-
-			vertContainer_std_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y, z)); 
-			vertContainer_std_Rcontour_Reye.push_back(Vector3d(x_d_Rcontour_Reye, y, z));
-			vertContainer_std_Lcontour_Leye.push_back(Vector3d(x_d_Lcontour_Leye, y, z)); 
-			vertContainer_std_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y, z));
-
-
-			for (int i = 0; i < nr_points; i++) { //
-
-				x = -stimulus_width / 2 + i * step_size_width;
-				u = (x + stimulus_width / 2) / textNormalizer + u_offset; //u coordinate. 
-	
-				//step 1: build the meshgrid using vertices, 
-				vertices_vec_std.push_back(x);
-				vertices_vec_std.push_back(y);
-				vertices_vec_std.push_back(z);
-
-				colors_vec_std.push_back(1);
-				colors_vec_std.push_back(0);
-				colors_vec_std.push_back(0);
-
-				texcoors_vec_std.push_back(u);
-				texcoors_vec_std.push_back(v);
-
-				normals_vec_std.push_back(normal_x );
-				normals_vec_std.push_back(normal_y );
-				normals_vec_std.push_back(normal_z );
-
-				//step 2: create an array/vector that store how the triangles should be drawn
-
-				// construct the triangle indices to be drawn
-				if (i < nr_points - 1 && j < nr_points - 1) {
-
-					indices_draw_triangle_vec_std.push_back(i_ind);
-					indices_draw_triangle_vec_std.push_back(i_ind + 1);
-					indices_draw_triangle_vec_std.push_back(i_ind + nr_points);
-
-					indices_draw_triangle_vec_std.push_back(i_ind + nr_points);
-					indices_draw_triangle_vec_std.push_back(i_ind + 1);
-					indices_draw_triangle_vec_std.push_back(i_ind + nr_points + 1);
-					//ind = ind + 6;
-				}
-
-				i_ind++;
-			}
-
-			y_prev = y; z_prev = z;
-		}
-
-	}else{///////////////////////// building comparison /////////////////////////
-	
 		vertices_vec_cmp.clear();
 		colors_vec_cmp.clear();
 		texcoors_vec_cmp.clear();
 		indices_draw_triangle_vec_cmp.clear();
 		normals_vec_cmp.clear();
-		normals_vec_cmp.clear();
 
-		vertContainer_cmp_Rcontour_Leye.clear();
-		vertContainer_cmp_Rcontour_Reye.clear();
-		vertContainer_cmp_Lcontour_Leye.clear();
-		vertContainer_cmp_Lcontour_Reye.clear();
+		vertices_vec_cmp = vertices_vec;
+		colors_vec_cmp = colors_vec;
+		texcoors_vec_cmp = texcoors_vec;
+		indices_draw_triangle_vec_cmp = indices_draw_triangle_vec;
+		normals_vec_cmp = normals_vec;
 
-		for (int j = 0; j < nr_points; j++) {  // 
 
-			y = -stimulus_height / 2 + j * step_size_height;
-			z = shapeDepth * cos(M_PI * y / stimulus_height);
+		vertContainer_cmp_Rcontour.clear();
+		vertContainer_cmp_Lcontour.clear();
 
-			total_distance_y = total_distance_y + sqrt(pow(y - y_prev, 2) + pow(z - z_prev, 2));
-			v = total_distance_y / textNormalizer + v_offset; //v coordinate
-
-			// shading should be consistent with texture depth
-			normal_x = 0;
-			normal_y = shapeDepth * sin(M_PI * y / stimulus_height) * M_PI / stimulus_height;
-			normal_z = 1;
-
-			vertContainer_cmp_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y, z)); 
-			vertContainer_cmp_Rcontour_Reye.push_back(Vector3d(x_d_Rcontour_Reye, y, z));
-			vertContainer_cmp_Lcontour_Leye.push_back(Vector3d(x_d_Lcontour_Leye, y, z)); 
-			vertContainer_cmp_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y, z));
-
-			for (int i = 0; i < nr_points; i++) { //
-
-				x = -stimulus_width / 2 + i * step_size_width;
-				u = (x + stimulus_width / 2) / textNormalizer + u_offset; //u coordinate. 
-	
-				//step 1: build the meshgrid using vertices, 
-				vertices_vec_cmp.push_back(x);
-				vertices_vec_cmp.push_back(y);
-				vertices_vec_cmp.push_back(z);
-
-				colors_vec_cmp.push_back(1);
-				colors_vec_cmp.push_back(0);
-				colors_vec_cmp.push_back(0);
-
-				texcoors_vec_cmp.push_back(u);
-				texcoors_vec_cmp.push_back(v);
-
-				normals_vec_cmp.push_back(normal_x);
-				normals_vec_cmp.push_back(normal_y);
-				normals_vec_cmp.push_back(normal_z);
-
-				//step 2: create an array/vector that store how the triangles should be drawn
-
-				// construct the triangle indices to be drawn
-				if (i < nr_points - 1 && j < nr_points - 1) {
-
-					indices_draw_triangle_vec_cmp.push_back(i_ind);
-					indices_draw_triangle_vec_cmp.push_back(i_ind + 1);
-					indices_draw_triangle_vec_cmp.push_back(i_ind + nr_points);
-
-					indices_draw_triangle_vec_cmp.push_back(i_ind + nr_points);
-					indices_draw_triangle_vec_cmp.push_back(i_ind + 1);
-					indices_draw_triangle_vec_cmp.push_back(i_ind + nr_points + 1);
-					//ind = ind + 6;
-				}
-
-				i_ind++;
-			}
-
-			y_prev = y; z_prev = z;
-		}
+		vertContainer_cmp_Rcontour = vertContainer_Rcontour_Clpeye;
+		vertContainer_cmp_Lcontour = vertContainer_Lcontour_Clpeye;
 	
 	}
 
@@ -192,6 +152,15 @@ void buildVertices_incongruent(bool isStandard, double textDepth, double dispDep
 	double step_size_height = stimulus_height / (double)(nr_points - 1);
 
 	GLuint i_ind = 0;
+
+	std::vector<GLfloat> vertices_vec;
+	std::vector<GLfloat> texcoors_vec;
+	std::vector<GLfloat> colors_vec;
+	std::vector<GLfloat> normals_vec;
+	std::vector<GLuint> indices_draw_triangle_vec;
+
+	std::vector<Vector3d> vertContainer_Rcontour_Clpeye;
+	std::vector<Vector3d> vertContainer_Lcontour_Clpeye;
 
 	double x_t, y_t, z_t, y_t_prev, z_t_prev, u, v;
 	double w, x_d, y_d, z_d;
@@ -209,114 +178,122 @@ void buildVertices_incongruent(bool isStandard, double textDepth, double dispDep
 
 	double normal_x, normal_y, normal_z, normal_norm;
 	
+	for (int j = 0; j < nr_points; j++) {  // 
 
+		y_t = -stimulus_height / 2 + j * step_size_height;
+		z_t = textDepth * cos(M_PI * y_t / stimulus_height);
 
-	if(isStandard){///////////////////////// building standard /////////////////////////
+		// shading should be consistent with texture depth
+		normal_x = 0;
+		normal_y = textDepth * sin(M_PI * y_t / stimulus_height) * M_PI / stimulus_height;
+		normal_z = 1;
+		//normal_norm = sqrt(pow(normal_y,2) + pow(normal_z, 2));
+
+		total_distance_y_t = total_distance_y_t + sqrt(pow(y_t - y_t_prev, 2) + pow(z_t - z_t_prev, 2));
+		v = total_distance_y_t / textNormalizer + v_offset; //v coordinate
+				
+		if(abs(y_t) < 0.01){
+			y_d = y_t;
+			z_d = dispDepth * cos(M_PI * y_d / stimulus_height) ;
+
+		}else if(abs( abs(y_t)- stimulus_height / 2) < 0.01){
+			y_d = y_t;
+			z_d = z_t;
+
+		}else{
+			c_cos = M_PI * y_t /(stimulus_height * (z_t - l));
+			z_d = NewtonSolver_Cosine(stimulus_height, dispDepth, c_cos, l, y_t, z_t);
+			w = (z_d - l)/(z_t - l);
+			y_d = w * y_t;
+
+		}
+
+		w = (z_d - l)/(z_t - l);
+
+		//x_d_Rcontour_Leye = -(interoculardistance / 2) + w * (x_t_Rcontour + interoculardistance / 2);
+		//x_d_Lcontour_Leye = -(interoculardistance / 2) + w * (x_t_Lcontour + interoculardistance / 2);
+		//x_d_Rcontour_Reye = (interoculardistance / 2) + w * (x_t_Rcontour - interoculardistance / 2);
+		//x_d_Lcontour_Reye = (interoculardistance / 2) + w * (x_t_Lcontour - interoculardistance / 2);
+		//vertContainer_std_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y_d, z_d)); 
+		//vertContainer_std_Rcontour_Reye.push_back(Vector3d(x_d_Rcontour_Reye, y_d, z_d));
+		//vertContainer_std_Lcontour_Leye.push_back(Vector3d(x_d_Lcontour_Leye, y_d, z_d)); 
+		//vertContainer_std_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y_d, z_d));
+		
+		x_d_Rcontour_Clpeye = w * x_t_Rcontour;
+		x_d_Lcontour_Clpeye = w * x_t_Lcontour ;
+
+		vertContainer_Rcontour_Clpeye.push_back(Vector3d(x_d_Rcontour_Clpeye, y_d, z_d)); 
+		vertContainer_Lcontour_Clpeye.push_back(Vector3d(x_d_Lcontour_Clpeye, y_d, z_d));
+
+		for (int i = 0; i < nr_points; i++) { //
+
+			x_t = -stimulus_width / 2 + i * step_size_width;
+			u = (x_t + stimulus_width / 2) / textNormalizer + u_offset; //u coordinate. 
+
+			x_d = x_t; 
+	
+			//step 1: build the meshgrid using vertices, 
+
+			vertices_vec.push_back(x_d);
+			vertices_vec.push_back(y_d);
+			vertices_vec.push_back(z_d);
+
+			colors_vec.push_back(1);
+			colors_vec.push_back(0);
+			colors_vec.push_back(0);
+
+			texcoors_vec.push_back(u);
+			texcoors_vec.push_back(v);
+
+			normals_vec.push_back(normal_x);
+			normals_vec.push_back(normal_y);
+			normals_vec.push_back(normal_z);
+
+			//step 2: create an array/vector that store how the triangles should be drawn
+
+			// construct the triangle indices to be drawn
+			if (i < nr_points - 1 && j < nr_points - 1) {
+
+				indices_draw_triangle_vec.push_back(i_ind);
+				indices_draw_triangle_vec.push_back(i_ind + 1);
+				indices_draw_triangle_vec.push_back(i_ind + nr_points);
+
+				indices_draw_triangle_vec.push_back(i_ind + nr_points);
+				indices_draw_triangle_vec.push_back(i_ind + 1);
+				indices_draw_triangle_vec.push_back(i_ind + nr_points + 1);
+				//ind = ind + 6;
+			}
+
+			i_ind++;
+
+		}
+				
+		y_t_prev = y_t; z_t_prev = z_t;
+	}
+
+	if(isStandard){///////////////////////// building standard /////////////////////////	
+		
 		vertices_vec_std.clear();
 		colors_vec_std.clear();
 		texcoors_vec_std.clear();
 		indices_draw_triangle_vec_std.clear();
 		normals_vec_std.clear();
 
-		vertContainer_std_Rcontour_Leye.clear();
-		vertContainer_std_Rcontour_Reye.clear();
-		vertContainer_std_Lcontour_Leye.clear();
-		vertContainer_std_Lcontour_Reye.clear();
+		vertices_vec_std = vertices_vec;
+		colors_vec_std = colors_vec;
+		texcoors_vec_std = texcoors_vec;
+		indices_draw_triangle_vec_std = indices_draw_triangle_vec;
+		normals_vec_std = normals_vec;
 
-		for (int j = 0; j < nr_points; j++) {  // 
 
-			y_t = -stimulus_height / 2 + j * step_size_height;
-			z_t = textDepth * cos(M_PI * y_t / stimulus_height);
+		vertContainer_std_Rcontour.clear();
+		vertContainer_std_Lcontour.clear();
 
-			// shading should be consistent with texture depth
-			normal_x = 0;
-			normal_y = textDepth * sin(M_PI * y_t / stimulus_height) * M_PI / stimulus_height;
-			normal_z = 1;
-			normal_norm = sqrt(pow(normal_y,2) + pow(normal_z, 2));
+		vertContainer_std_Rcontour = vertContainer_Rcontour_Clpeye;
+		vertContainer_std_Lcontour = vertContainer_Lcontour_Clpeye;
 
-			total_distance_y_t = total_distance_y_t + sqrt(pow(y_t - y_t_prev, 2) + pow(z_t - z_t_prev, 2));
-			v = total_distance_y_t / textNormalizer + v_offset; //v coordinate
-			
-			
-			if(abs(y_t) < 0.01){
-				y_d = y_t;
-				z_d = dispDepth * cos(M_PI * y_d / stimulus_height) ;
 
-			}else if(abs( abs(y_t)- stimulus_height / 2) < 0.01){
-				y_d = y_t;
-				z_d = z_t;
-
-			}else{
-				c_cos = M_PI * y_t /(stimulus_height * (z_t - l));
-				z_d = NewtonSolver_Cosine(stimulus_height, dispDepth, c_cos, l, y_t, z_t);
-				w = (z_d - l)/(z_t - l);
-				y_d = w * y_t;
-
-			}
-
-			w = (z_d - l)/(z_t - l);
-
-			//x_d_Rcontour_Leye = -(interoculardistance / 2) + w * (x_t_Rcontour + interoculardistance / 2);
-			//x_d_Lcontour_Leye = -(interoculardistance / 2) + w * (x_t_Lcontour + interoculardistance / 2);
-			//x_d_Rcontour_Reye = (interoculardistance / 2) + w * (x_t_Rcontour - interoculardistance / 2);
-			//x_d_Lcontour_Reye = (interoculardistance / 2) + w * (x_t_Lcontour - interoculardistance / 2);
-			//vertContainer_std_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y_d, z_d)); 
-			//vertContainer_std_Rcontour_Reye.push_back(Vector3d(x_d_Rcontour_Reye, y_d, z_d));
-			//vertContainer_std_Lcontour_Leye.push_back(Vector3d(x_d_Lcontour_Leye, y_d, z_d)); 
-			//vertContainer_std_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y_d, z_d));
-			
-			x_d_Rcontour_Clpeye = w * x_t_Rcontour;
-			x_d_Lcontour_Clpeye = w * x_t_Lcontour ;
-
-			vertContainer_std_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Clpeye, y_d, z_d)); 
-			vertContainer_std_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Clpeye, y_d, z_d));
-
-			for (int i = 0; i < nr_points; i++) { //
-
-				x_t = -stimulus_width / 2 + i * step_size_width;
-				u = (x_t + stimulus_width / 2) / textNormalizer + u_offset; //u coordinate. 
-
-				x_d = x_t; 
-		
-				//step 1: build the meshgrid using vertices, 
-
-				vertices_vec_std.push_back(x_d);
-				vertices_vec_std.push_back(y_d);
-				vertices_vec_std.push_back(z_d);
-
-				colors_vec_std.push_back(1);
-				colors_vec_std.push_back(0);
-				colors_vec_std.push_back(0);
-
-				texcoors_vec_std.push_back(u);
-				texcoors_vec_std.push_back(v);
-
-				normals_vec_std.push_back(normal_x/normal_norm);
-				normals_vec_std.push_back(normal_y / normal_norm);
-				normals_vec_std.push_back(normal_z / normal_norm);
-
-				//step 2: create an array/vector that store how the triangles should be drawn
-
-				// construct the triangle indices to be drawn
-				if (i < nr_points - 1 && j < nr_points - 1) {
-
-					indices_draw_triangle_vec_std.push_back(i_ind);
-					indices_draw_triangle_vec_std.push_back(i_ind + 1);
-					indices_draw_triangle_vec_std.push_back(i_ind + nr_points);
-
-					indices_draw_triangle_vec_std.push_back(i_ind + nr_points);
-					indices_draw_triangle_vec_std.push_back(i_ind + 1);
-					indices_draw_triangle_vec_std.push_back(i_ind + nr_points + 1);
-					//ind = ind + 6;
-				}
-
-				i_ind++;
-
-			}
-					
-			y_t_prev = y_t; z_t_prev = z_t;
-		}
-	}else{///////////////////////// building comparison /////////////////////////
+	}else{
 
 		vertices_vec_cmp.clear();
 		colors_vec_cmp.clear();
@@ -324,103 +301,19 @@ void buildVertices_incongruent(bool isStandard, double textDepth, double dispDep
 		indices_draw_triangle_vec_cmp.clear();
 		normals_vec_cmp.clear();
 
-		vertContainer_cmp_Rcontour_Leye.clear();
-		vertContainer_cmp_Rcontour_Reye.clear();
-		vertContainer_cmp_Lcontour_Leye.clear();
-		vertContainer_cmp_Lcontour_Reye.clear();
+		vertices_vec_cmp = vertices_vec;
+		colors_vec_cmp = colors_vec;
+		texcoors_vec_cmp = texcoors_vec;
+		indices_draw_triangle_vec_cmp = indices_draw_triangle_vec;
+		normals_vec_cmp = normals_vec;
 
-		for (int j = 0; j < nr_points; j++) {  // 
 
-			y_t = -stimulus_height / 2 + j * step_size_height;
-			z_t = textDepth * cos(M_PI * y_t / stimulus_height);
+		vertContainer_cmp_Rcontour.clear();
+		vertContainer_cmp_Lcontour.clear();
 
-			normal_x = 0;
-			normal_y = textDepth * sin(M_PI * y_t / stimulus_height) * M_PI / stimulus_height;
-			normal_z = 1;
-			normal_norm = sqrt(pow(normal_y, 2) + pow(normal_z, 2));
-
-			total_distance_y_t = total_distance_y_t + sqrt(pow(y_t - y_t_prev, 2) + pow(z_t - z_t_prev, 2));
-			v = total_distance_y_t / textNormalizer + v_offset; //v coordinate
-			
-			
-			if(abs(y_t) < 0.01){
-				y_d = y_t;
-				z_d = dispDepth * cos(M_PI * y_d / stimulus_height);
-				
-			}else if(abs( abs(y_t)- stimulus_height / 2) < 0.01){
-				y_d = y_t;
-				z_d = z_t;
-
-			}else{
-				c_cos = M_PI * y_t /(stimulus_height * (z_t - l));
-				z_d = NewtonSolver_Cosine(stimulus_height, dispDepth, c_cos, l, y_t, z_t);
-				w = (z_d - l)/(z_t - l);
-				y_d = w * y_t;
-
-			}
-
-			w = (z_d - l)/(z_t - l);
-			//x_d_Rcontour_Leye = -(interoculardistance / 2) + w * (x_t_Rcontour + interoculardistance / 2);
-			//x_d_Lcontour_Leye = -(interoculardistance / 2) + w * (x_t_Lcontour + interoculardistance / 2);
-			//x_d_Rcontour_Reye = (interoculardistance / 2) + w * (x_t_Rcontour - interoculardistance / 2);
-			//x_d_Lcontour_Reye = (interoculardistance / 2) + w * (x_t_Lcontour - interoculardistance / 2);
-
-			//vertContainer_cmp_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y_d, z_d)); 
-			//vertContainer_cmp_Rcontour_Reye.push_back(Vector3d(x_d_Rcontour_Reye, y_d, z_d));
-			//vertContainer_cmp_Lcontour_Leye.push_back(Vector3d(x_d_Lcontour_Leye, y_d, z_d)); 
-			//vertContainer_cmp_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y_d, z_d)); 
-
-			x_d_Rcontour_Clpeye = w * x_t_Rcontour;
-			x_d_Lcontour_Clpeye = w * x_t_Lcontour ;
-
-			vertContainer_cmp_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Clpeye, y_d, z_d)); 
-			vertContainer_cmp_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Clpeye, y_d, z_d));
-
-			for (int i = 0; i < nr_points; i++) { //
-
-				x_t = -stimulus_width / 2 + i * step_size_width;
-				u = (x_t + stimulus_width / 2) / textNormalizer + u_offset; //u coordinate. 
-
-				x_d = x_t; 
-		
-				//step 1: build the meshgrid using vertices, 
-
-				vertices_vec_cmp.push_back(x_d);
-				vertices_vec_cmp.push_back(y_d);
-				vertices_vec_cmp.push_back(z_d);
-
-				colors_vec_cmp.push_back(1);
-				colors_vec_cmp.push_back(0);
-				colors_vec_cmp.push_back(0);
-
-				texcoors_vec_cmp.push_back(u);
-				texcoors_vec_cmp.push_back(v);
-
-				normals_vec_cmp.push_back(normal_x / normal_norm);
-				normals_vec_cmp.push_back(normal_y / normal_norm);
-				normals_vec_cmp.push_back(normal_z / normal_norm);
-
-				//step 2: create an array/vector that store how the triangles should be drawn
-
-				// construct the triangle indices to be drawn
-				if (i < nr_points - 1 && j < nr_points - 1) {
-
-					indices_draw_triangle_vec_cmp.push_back(i_ind);
-					indices_draw_triangle_vec_cmp.push_back(i_ind + 1);
-					indices_draw_triangle_vec_cmp.push_back(i_ind + nr_points);
-
-					indices_draw_triangle_vec_cmp.push_back(i_ind + nr_points);
-					indices_draw_triangle_vec_cmp.push_back(i_ind + 1);
-					indices_draw_triangle_vec_cmp.push_back(i_ind + nr_points + 1);
-					//ind = ind + 6;
-				}
-
-				i_ind++;
-
-			}
-					
-			y_t_prev = y_t; z_t_prev = z_t;
-		}
+		vertContainer_cmp_Rcontour = vertContainer_Rcontour_Clpeye;
+		vertContainer_cmp_Lcontour = vertContainer_Lcontour_Clpeye;
+	
 	}
 
 }
@@ -479,81 +372,81 @@ void drawPanels(bool isStandard, double displayDist, double dispDepth){
 
 	if(isStandard){
 
-		n = int(vertContainer_std_Rcontour_Leye.size());
+		n = int(vertContainer_std_Rcontour.size());
 
 		if(n > 0){
 
 			// Right panels
 			glBegin(GL_QUAD_STRIP);
 
-			glVertex3f(vertContainer_std_Rcontour_Leye.at(0)[0] + panel_width,		vertContainer_std_Rcontour_Leye.at(0)[1] - panel_height_extra,			vertContainer_std_Rcontour_Leye.at(0)[2]); //0
-			glVertex3f(vertContainer_std_Rcontour_Leye.at(0)[0],					vertContainer_std_Rcontour_Leye.at(0)[1] - panel_height_extra,			vertContainer_std_Rcontour_Leye.at(0)[2]); //1
+			glVertex3f(vertContainer_std_Rcontour.at(0)[0] + panel_width,		vertContainer_std_Rcontour.at(0)[1] - panel_height_extra,			vertContainer_std_Rcontour.at(0)[2]); //0
+			glVertex3f(vertContainer_std_Rcontour.at(0)[0],					vertContainer_std_Rcontour.at(0)[1] - panel_height_extra,			vertContainer_std_Rcontour.at(0)[2]); //1
 
 			for (int i = 0; i < n; i++)
 			{	
-				glVertex3f(vertContainer_std_Rcontour_Leye.at(i)[0] + panel_width,		vertContainer_std_Rcontour_Leye.at(i)[1],			vertContainer_std_Rcontour_Leye.at(i)[2]); //0
-				glVertex3f(vertContainer_std_Rcontour_Leye.at(i)[0],					vertContainer_std_Rcontour_Leye.at(i)[1],			vertContainer_std_Rcontour_Leye.at(i)[2]); //1
+				glVertex3f(vertContainer_std_Rcontour.at(i)[0] + panel_width,		vertContainer_std_Rcontour.at(i)[1],			vertContainer_std_Rcontour.at(i)[2]); //0
+				glVertex3f(vertContainer_std_Rcontour.at(i)[0],					vertContainer_std_Rcontour.at(i)[1],			vertContainer_std_Rcontour.at(i)[2]); //1
 
 			}	
 
-			glVertex3f(vertContainer_std_Rcontour_Leye.at(n-1)[0] + panel_width,		vertContainer_std_Rcontour_Leye.at(n-1)[1] + panel_height_extra,			vertContainer_std_Rcontour_Leye.at(n-1)[2]); //0
-			glVertex3f(vertContainer_std_Rcontour_Leye.at(n-1)[0],					vertContainer_std_Rcontour_Leye.at(n-1)[1] + panel_height_extra,			vertContainer_std_Rcontour_Leye.at(n-1)[2]); //1
+			glVertex3f(vertContainer_std_Rcontour.at(n-1)[0] + panel_width,		vertContainer_std_Rcontour.at(n-1)[1] + panel_height_extra,			vertContainer_std_Rcontour.at(n-1)[2]); //0
+			glVertex3f(vertContainer_std_Rcontour.at(n-1)[0],					vertContainer_std_Rcontour.at(n-1)[1] + panel_height_extra,			vertContainer_std_Rcontour.at(n-1)[2]); //1
 
 			glEnd();
 
 			// Left panels
 			glBegin(GL_QUAD_STRIP);
 
-			glVertex3f(vertContainer_std_Lcontour_Reye.at(0)[0],		vertContainer_std_Lcontour_Reye.at(0)[1] - panel_height_extra,			vertContainer_std_Lcontour_Reye.at(0)[2]); //0
-			glVertex3f(vertContainer_std_Lcontour_Reye.at(0)[0] - panel_width,					vertContainer_std_Lcontour_Reye.at(0)[1] - panel_height_extra,			vertContainer_std_Lcontour_Reye.at(0)[2]); //1
+			glVertex3f(vertContainer_std_Lcontour.at(0)[0],		vertContainer_std_Lcontour.at(0)[1] - panel_height_extra,			vertContainer_std_Lcontour.at(0)[2]); //0
+			glVertex3f(vertContainer_std_Lcontour.at(0)[0] - panel_width,					vertContainer_std_Lcontour.at(0)[1] - panel_height_extra,			vertContainer_std_Lcontour.at(0)[2]); //1
 
 			for (int i = 0; i < n; i++)
 			{	
-				glVertex3f(vertContainer_std_Lcontour_Reye.at(i)[0],		vertContainer_std_Lcontour_Reye.at(i)[1],			vertContainer_std_Lcontour_Reye.at(i)[2]); //0
-				glVertex3f(vertContainer_std_Lcontour_Reye.at(i)[0] - panel_width,					vertContainer_std_Lcontour_Reye.at(i)[1],			vertContainer_std_Lcontour_Reye.at(i)[2]); //1
+				glVertex3f(vertContainer_std_Lcontour.at(i)[0],		vertContainer_std_Lcontour.at(i)[1],			vertContainer_std_Lcontour.at(i)[2]); //0
+				glVertex3f(vertContainer_std_Lcontour.at(i)[0] - panel_width,					vertContainer_std_Lcontour.at(i)[1],			vertContainer_std_Lcontour.at(i)[2]); //1
 
 			}	
 
-			glVertex3f(vertContainer_std_Lcontour_Reye.at(n-1)[0],		vertContainer_std_Lcontour_Reye.at(n-1)[1] + panel_height_extra,			vertContainer_std_Lcontour_Reye.at(n-1)[2]); //0
-			glVertex3f(vertContainer_std_Lcontour_Reye.at(n-1)[0] - panel_width,					vertContainer_std_Lcontour_Reye.at(n-1)[1] + panel_height_extra,			vertContainer_std_Lcontour_Reye.at(n-1)[2]); //1
+			glVertex3f(vertContainer_std_Lcontour.at(n-1)[0],		vertContainer_std_Lcontour.at(n-1)[1] + panel_height_extra,			vertContainer_std_Lcontour.at(n-1)[2]); //0
+			glVertex3f(vertContainer_std_Lcontour.at(n-1)[0] - panel_width,					vertContainer_std_Lcontour.at(n-1)[1] + panel_height_extra,			vertContainer_std_Lcontour.at(n-1)[2]); //1
 
 			glEnd();
 		}
 
 	}else{
 
-		n = int(vertContainer_cmp_Rcontour_Leye.size());
+		n = int(vertContainer_cmp_Rcontour.size());
 
 		if(n > 0){
 			// Right panels
 			glBegin(GL_QUAD_STRIP);
 
-			glVertex3f(vertContainer_cmp_Rcontour_Leye.at(0)[0] + panel_width,		vertContainer_cmp_Rcontour_Leye.at(0)[1] - panel_height_extra,			vertContainer_cmp_Rcontour_Leye.at(0)[2]); //0
-			glVertex3f(vertContainer_cmp_Rcontour_Leye.at(0)[0],					vertContainer_cmp_Rcontour_Leye.at(0)[1] - panel_height_extra,			vertContainer_cmp_Rcontour_Leye.at(0)[2]); //1
+			glVertex3f(vertContainer_cmp_Rcontour.at(0)[0] + panel_width,		vertContainer_cmp_Rcontour.at(0)[1] - panel_height_extra,			vertContainer_cmp_Rcontour.at(0)[2]); //0
+			glVertex3f(vertContainer_cmp_Rcontour.at(0)[0],					vertContainer_cmp_Rcontour.at(0)[1] - panel_height_extra,			vertContainer_cmp_Rcontour.at(0)[2]); //1
 			for (int i = 0; i < n; i++)
 			{	
-				glVertex3f(vertContainer_cmp_Rcontour_Leye.at(i)[0] + panel_width,		vertContainer_cmp_Rcontour_Leye.at(i)[1],			vertContainer_cmp_Rcontour_Leye.at(i)[2]); 
-				glVertex3f(vertContainer_cmp_Rcontour_Leye.at(i)[0],					vertContainer_cmp_Rcontour_Leye.at(i)[1],			vertContainer_cmp_Rcontour_Leye.at(i)[2]); 
+				glVertex3f(vertContainer_cmp_Rcontour.at(i)[0] + panel_width,		vertContainer_cmp_Rcontour.at(i)[1],			vertContainer_cmp_Rcontour.at(i)[2]); 
+				glVertex3f(vertContainer_cmp_Rcontour.at(i)[0],					vertContainer_cmp_Rcontour.at(i)[1],			vertContainer_cmp_Rcontour.at(i)[2]); 
 
 			}	
-			glVertex3f(vertContainer_cmp_Rcontour_Leye.at(n-1)[0] + panel_width,		vertContainer_cmp_Rcontour_Leye.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Rcontour_Leye.at(n-1)[2]); //0
-			glVertex3f(vertContainer_cmp_Rcontour_Leye.at(n-1)[0],					vertContainer_cmp_Rcontour_Leye.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Rcontour_Leye.at(n-1)[2]); //1
+			glVertex3f(vertContainer_cmp_Rcontour.at(n-1)[0] + panel_width,		vertContainer_cmp_Rcontour.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Rcontour.at(n-1)[2]); //0
+			glVertex3f(vertContainer_cmp_Rcontour.at(n-1)[0],					vertContainer_cmp_Rcontour.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Rcontour.at(n-1)[2]); //1
 
 			glEnd();
 
 			// Left panels
 			glBegin(GL_QUAD_STRIP);
 
-			glVertex3f(vertContainer_cmp_Lcontour_Reye.at(0)[0],		vertContainer_cmp_Lcontour_Reye.at(0)[1] - panel_height_extra,			vertContainer_cmp_Lcontour_Reye.at(0)[2]); //0
-			glVertex3f(vertContainer_cmp_Lcontour_Reye.at(0)[0] - panel_width,					vertContainer_cmp_Lcontour_Reye.at(0)[1] - panel_height_extra,			vertContainer_cmp_Lcontour_Reye.at(0)[2]); //1
+			glVertex3f(vertContainer_cmp_Lcontour.at(0)[0],		vertContainer_cmp_Lcontour.at(0)[1] - panel_height_extra,			vertContainer_cmp_Lcontour.at(0)[2]); //0
+			glVertex3f(vertContainer_cmp_Lcontour.at(0)[0] - panel_width,					vertContainer_cmp_Lcontour.at(0)[1] - panel_height_extra,			vertContainer_cmp_Lcontour.at(0)[2]); //1
 			for (int i = 0; i < n; i++)
 			{	
-				glVertex3f(vertContainer_cmp_Lcontour_Reye.at(i)[0],		vertContainer_cmp_Lcontour_Reye.at(i)[1],			vertContainer_cmp_Lcontour_Reye.at(i)[2]); //0
-				glVertex3f(vertContainer_cmp_Lcontour_Reye.at(i)[0] - panel_width,					vertContainer_cmp_Lcontour_Reye.at(i)[1],			vertContainer_cmp_Lcontour_Reye.at(i)[2]); //1
+				glVertex3f(vertContainer_cmp_Lcontour.at(i)[0],		vertContainer_cmp_Lcontour.at(i)[1],			vertContainer_cmp_Lcontour.at(i)[2]); //0
+				glVertex3f(vertContainer_cmp_Lcontour.at(i)[0] - panel_width,					vertContainer_cmp_Lcontour.at(i)[1],			vertContainer_cmp_Lcontour.at(i)[2]); //1
 
 			}	
-			glVertex3f(vertContainer_cmp_Lcontour_Reye.at(n-1)[0],		vertContainer_cmp_Lcontour_Reye.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Lcontour_Reye.at(n-1)[2]); //0
-			glVertex3f(vertContainer_cmp_Lcontour_Reye.at(n-1)[0] - panel_width,					vertContainer_cmp_Lcontour_Reye.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Lcontour_Reye.at(n-1)[2]); //1
+			glVertex3f(vertContainer_cmp_Lcontour.at(n-1)[0],		vertContainer_cmp_Lcontour.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Lcontour.at(n-1)[2]); //0
+			glVertex3f(vertContainer_cmp_Lcontour.at(n-1)[0] - panel_width,					vertContainer_cmp_Lcontour.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Lcontour.at(n-1)[2]); //1
 
 			glEnd();			
 
