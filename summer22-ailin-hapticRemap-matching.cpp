@@ -1214,8 +1214,9 @@ void initTrial()
 {
 	current_stage = prep_trial;
 	initProjectionScreen(display_distance);
-	trial_timer.reset();
-	trial_timer.start();
+	//trial_timer.reset();
+	//trial_timer.start();
+	//trial_timer.stop();
 
 	if(rand() % 2){
 		std_is_first = true;
@@ -1283,32 +1284,48 @@ void onlineTrial(){
 
 	switch(current_stage){
 
+	case stimulus_preview:
+		check_apparatus_alignment();
+		break;
+
 	case trial_fixate_first:
+		
+		ElapsedTime = trial_timer.getElapsedTimeInMilliSec();
 
 		if (ElapsedTime > fixateTime) {
-			current_stage = trial_present_first;
 			beepOk(19);
+			lastTimeStamp = trial_timer.getElapsedTimeInMilliSec();			
+			current_stage = trial_present_first;
+			
 		}
 		break;
 
 	case trial_present_first:
 
-		if (ElapsedTime > (fixateTime + viewTime)) {
+		ElapsedTime = trial_timer.getElapsedTimeInMilliSec();
+
+		if ( (ElapsedTime - lastTimeStamp) > viewTime) {
+			lastTimeStamp = trial_timer.getElapsedTimeInMilliSec();
 			current_stage = trial_fixate_second;
 		}
 		break;
 
 	case trial_fixate_second:
 
-		if (ElapsedTime > (2 * fixateTime + viewTime)) {
-			current_stage = trial_present_second;
+		ElapsedTime = trial_timer.getElapsedTimeInMilliSec();
+
+		if ((ElapsedTime - lastTimeStamp) > (fixateTime)) {			
 			beepOk(20);
+			lastTimeStamp = trial_timer.getElapsedTimeInMilliSec();
+			current_stage = trial_present_second;
 		}
 		break;
 
 	case trial_present_second:
 
-		if (ElapsedTime > (2 * fixateTime + 2 * viewTime) ){
+		ElapsedTime = trial_timer.getElapsedTimeInMilliSec();
+		if ((ElapsedTime - lastTimeStamp) > (viewTime)){
+			lastTimeStamp = trial_timer.getElapsedTimeInMilliSec();
 			current_stage = trial_respond;
 		}
 		break;
@@ -1351,7 +1368,7 @@ void advanceTrial()
 		std_is_first << "\t" <<
 		respond_first_deeper << "\t" <<
 		respond_cmp_deeper << "\t" <<
-		ElapsedTime  << "\t" <<
+		responseTime  << "\t" <<
 		stairID << "\t" <<
 		stair_reversal << "\t" <<
 		ascending << endl;	
@@ -1413,8 +1430,9 @@ void handleKeypress(unsigned char key, int x, int y)
 				initPreviewStimulus(depth_std_text, depth_std_disp);
 
 			}else if(current_stage == trial_respond){
+				
+				responseTime = trial_timer.getElapsedTimeInMilliSec() - lastTimeStamp;
 				trial_timer.stop();
-
 				respond_first_deeper = true;
 				if(std_is_first){
 					respond_cmp_deeper = false;
@@ -1434,6 +1452,8 @@ void handleKeypress(unsigned char key, int x, int y)
 				amb_intensity_std = adjustAmbient(depth_std_text, max_intensity, 1.0, 0.6, 20, 40);
 				initPreviewStimulus(depth_std_text, depth_std_disp);
 			}else if(current_stage == trial_respond){
+
+				responseTime = trial_timer.getElapsedTimeInMilliSec() - lastTimeStamp;
 				trial_timer.stop();
 
 				respond_first_deeper = false;
@@ -1448,25 +1468,22 @@ void handleKeypress(unsigned char key, int x, int y)
 			break;
 
 
-
-
 		case '+':
 			switch(current_stage){
 				case stimulus_preview:
+					if(abs(mirrorAlignment - 45.0) < 0.2){
+						beepOk(5);
+						visibleInfo = false;
+						initBlock();
+						initTrial();
+					}else{
+						beepOk(8);
+					}
 					
-					beepOk(5);
-					visibleInfo = false;
-					initBlock();
-					initTrial();
-					
-				break;
-
-				case trial_respond:
-					trial_timer.stop();
-					advanceTrial();
 				break;
 
 				case break_time:
+					check_apparatus_alignment();
 					if(abs(mirrorAlignment - 45.0) < 0.2){
 						beepOk(5);
 						visibleInfo = false;
@@ -1590,12 +1607,12 @@ void beepOk(int tone)
 void idle()
 {
 	onlineTrial();
-	online_apparatus_alignment();
-	ElapsedTime = trial_timer.getElapsedTimeInMilliSec();
+	check_apparatus_alignment();
+	//ElapsedTime = trial_timer.getElapsedTimeInMilliSec();
 }
 
 /*** Online operations ***/
-void online_apparatus_alignment()
+void check_apparatus_alignment()
 {
 	updateTheMarkers();
 	// mirror alignment check
@@ -1608,7 +1625,7 @@ void online_apparatus_alignment()
 			)
 		   ) * 180 / M_PI;
 	}else{
-		mirrorAlignment = 45.09;//999;
+		mirrorAlignment = 999;//999;
 	}
 
     // screen Y alignment check
