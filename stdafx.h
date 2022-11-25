@@ -75,7 +75,7 @@ CoordinatesExtractor headEyeCoords;
 /***** CALIBRATION FILE *****/
 #include "LatestCalibration.h"
 static const Vector3d center(0, 0, focalDistance);
-double mirrorAlignment = 0.0, screenAlignmentY = 0.0, screenAlignmentZ = 0.0;
+double mirrorAlignment = 45.0, screenAlignmentY = 0.0, screenAlignmentZ = 0.0;
 
 /********** EYES AND MARKERS **********************/
 Vector3d eyeLeft, eyeRight, eyeMiddle;
@@ -109,6 +109,7 @@ string responseFile_headers = "subjName\tIOD\tblockN\ttrialN\tdisplayDistance\tv
 string subjectName;
 
 /**********	TRIALS **************/
+int sessionNum = 0;
 int totalBlkNum = 1;
 int blkNum = 1;
 int trialNum = 0;
@@ -117,27 +118,28 @@ int trainNum_cap = 20;
 
 double percentComplete = 0;
 int repetition = 2;
-int totalTrNum = 240; //3 * 4 * 7 * repetition;
+int totalTrNum = 120; 
 int stairID = 0, stair_reversal = 0, ascending = 0;
 /********** STIMULUS SHAPE ***************/
 // stimulus shape
 double display_distance;
+double visualTarget_X = 21;
 double visual_angle = 8.0; // stim diangonal size
 
 //height and width
 double stimulus_height = 70; //tan((DEG2RAD * visual_angle)/2) * 2 * (abs(display_distance));
 double stimulus_width = 70; //ratio_bgwidth_height * stimulus_height;
 
-double ratio_bgwidth_height = 1.3;//1.3;
+double ratio_bgwidth_height = 1.4;//1.3;
 double stimulus_bgwidth = 70;
-double ratio_visiblewidth_height = 1.1;//1.1;
+double ratio_visiblewidth_height = 1.2;//1.1;
 double stimulus_visiblewidth = 70; //ratio_visiblewidth_height * stimulus_height;
 
 // depths
-double depth_std = 30;
+double depth_std = 32;
 double depth_stdDelta = 0;
-double depth_std_text = 28;
-double depth_std_disp = 28;
+double depth_std_text = 32;
+double depth_std_disp = 32;
 
 double depth_cmp = 30;
 double depth_stdcmpDiff = depth_std - depth_cmp;
@@ -167,15 +169,11 @@ std::vector<Vector3d> vertContainer_std_Rcontour_Leye;
 std::vector<Vector3d> vertContainer_std_Rcontour_Reye;
 std::vector<Vector3d> vertContainer_std_Lcontour_Leye;
 std::vector<Vector3d> vertContainer_std_Lcontour_Reye;
-std::vector<Vector3d> vertContainer_std_Rcontour;
-std::vector<Vector3d> vertContainer_std_Lcontour;
 
 std::vector<Vector3d> vertContainer_cmp_Rcontour_Leye;
 std::vector<Vector3d> vertContainer_cmp_Rcontour_Reye;
 std::vector<Vector3d> vertContainer_cmp_Lcontour_Leye;
 std::vector<Vector3d> vertContainer_cmp_Lcontour_Reye;
-std::vector<Vector3d> vertContainer_cmp_Rcontour;
-std::vector<Vector3d> vertContainer_cmp_Lcontour;
 
 /********** STIMULUS VERTICES ***************/
 int nr_points = 201;
@@ -206,8 +204,9 @@ double v_offset = 0.05;
 
 // light setting
 float max_intensity = 0.8;
-float amb_intensity = 0.3;
-float lightDir_z = 0.8;
+float amb_intensity_std = 0.3, amb_intensity_cmp = 0.3;
+float lightDir_z = 0.6;
+
 
 /********** STATE VARIABLES ***************/
 enum Stages { stimulus_preview, prep_trial, trial_fixate_first, trial_present_first, trial_fixate_second, trial_present_second, trial_respond, break_time, exp_completed };
@@ -223,6 +222,7 @@ bool visibleInfo = true;
 
 bool resetScreen_betweenRuns = true;
 
+int errorID = 0;
 /********** TIME ***************/
 // Timer variable, set for each trial 
 Timer trial_timer;
@@ -269,6 +269,7 @@ void drawPanel_Leye(bool isStandard, double displayDist, double dispDepth);
 void drawPanel_Reye(bool isStandard, double displayDist, double dispDepth);
 
 void drawPanels(bool isStandard, double displayDist, double dispDepth);
-void turnLightOn();
+void turnLightOn(float ambIntensity);
 int LoadGLTextures();
-float adjustAmbient(double textDepth);
+float adjustAmbient(double textDepth, float maxInt, double rateAmbvsDiff_flat, double rateAmbvsDiff_deep, double Depth_flat, double Depth_deep);
+
