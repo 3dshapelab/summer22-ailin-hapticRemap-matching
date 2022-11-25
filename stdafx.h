@@ -220,13 +220,13 @@ bool stimulusDim_retinal_vs_physical = true;
 bool training = true;
 bool visibleInfo = true;
 
-bool resetScreen_betweenRuns = true;
+bool resetScreen_betweenRuns = false;
 
 int errorID = 0;
 /********** TIME ***************/
 // Timer variable, set for each trial 
 Timer trial_timer;
-double ElapsedTime;
+double ElapsedTime, lastTimeStamp, responseTime;
 
 double fixateTime = 500;
 double viewTime = 650;
@@ -243,7 +243,8 @@ void initStreams();
 void handleResize(int w, int h);
 void initProjectionScreen(double _focalDist, const Affine3d& _transformation = Affine3d::Identity(), bool synchronous = true);
 void updateTheMarkers();
-void online_apparatus_alignment();
+void check_apparatus_alignment();
+//void online_apparatus_alignment();
 void cleanup();
 void beepOk(int tone);
 
@@ -272,4 +273,3 @@ void drawPanels(bool isStandard, double displayDist, double dispDepth);
 void turnLightOn(float ambIntensity);
 int LoadGLTextures();
 float adjustAmbient(double textDepth, float maxInt, double rateAmbvsDiff_flat, double rateAmbvsDiff_deep, double Depth_flat, double Depth_deep);
-
