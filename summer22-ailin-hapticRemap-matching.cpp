@@ -11,20 +11,12 @@ void initPreviewStimulus(double textDepth, double dispDepth) {
 		buildVertices_incongruent(true, textDepth, dispDepth, display_distance_jittered_std, normalizer_to_uv_std);
 	}
 
+	//amb_intensity_std = adjustAmbient(textDepth, max_intensity, 1.0, 0.6, 20, 40);
+
 }
 
 
 void buildVertices_congruent(bool isStandard, double shapeDepth, double textNormalizer) {
-
-	std::vector<GLfloat> vertices_vec;
-	std::vector<GLfloat> texcoors_vec;
-	std::vector<GLfloat> colors_vec;
-	std::vector<GLfloat> normals_vec;
-	std::vector<GLuint> indices_draw_triangle_vec;
-
-	std::vector<Vector3d> vertContainer_Rcontour_Clpeye;
-	std::vector<Vector3d> vertContainer_Lcontour_Clpeye;
-
 	
 	double step_size_width = stimulus_width / (double)(nr_points - 1);
 	double step_size_height = stimulus_height / (double)(nr_points - 1);
@@ -38,108 +30,158 @@ void buildVertices_congruent(bool isStandard, double shapeDepth, double textNorm
 
 	double normal_x, normal_y, normal_z;
 
-	double x_Rcontour = stimulus_visiblewidth / 2;
-	double x_Lcontour = -stimulus_visiblewidth / 2;
+	double x_d_Rcontour_Leye = stimulus_visiblewidth / 2;
+	//double x_d_Lcontour_Leye = -stimulus_visiblewidth / 2;
+	//double x_d_Rcontour_Reye = stimulus_visiblewidth / 2;
+	double x_d_Lcontour_Reye = -stimulus_visiblewidth / 2;
 	
+	if(isStandard){///////////////////////// building standard /////////////////////////
 
-	for (int j = 0; j < nr_points; j++) {  // 
-
-		y = -stimulus_height / 2 + j * step_size_height;
-		z = shapeDepth * cos(M_PI * y / stimulus_height);
-
-		total_distance_y = total_distance_y + sqrt(pow(y - y_prev, 2) + pow(z - z_prev, 2));
-		v = total_distance_y / textNormalizer + v_offset; //v coordinate
-
-		// shading should be consistent with texture depth
-		normal_x = 0;
-		normal_y = shapeDepth * sin(M_PI * y / stimulus_height) * M_PI / stimulus_height;
-		normal_z = 1;
-
-		vertContainer_Rcontour_Clpeye.push_back(Vector3d(x_Rcontour, y, z)); 
-		vertContainer_Lcontour_Clpeye.push_back(Vector3d(x_Lcontour, y, z)); 
-
-		for (int i = 0; i < nr_points; i++) { //
-
-			x = -stimulus_width / 2 + i * step_size_width;
-			u = (x + stimulus_width / 2) / textNormalizer + u_offset; //u coordinate. 
-
-			//step 1: build the meshgrid using vertices, 
-			vertices_vec.push_back(x);
-			vertices_vec.push_back(y);
-			vertices_vec.push_back(z);
-
-			colors_vec.push_back(1);
-			colors_vec.push_back(0);
-			colors_vec.push_back(0);
-
-			texcoors_vec.push_back(u);
-			texcoors_vec.push_back(v);
-
-			normals_vec.push_back(normal_x );
-			normals_vec.push_back(normal_y );
-			normals_vec.push_back(normal_z );
-
-			//step 2: create an array/vector that store how the triangles should be drawn
-
-			// construct the triangle indices to be drawn
-			if (i < nr_points - 1 && j < nr_points - 1) {
-
-				indices_draw_triangle_vec.push_back(i_ind);
-				indices_draw_triangle_vec.push_back(i_ind + 1);
-				indices_draw_triangle_vec.push_back(i_ind + nr_points);
-
-				indices_draw_triangle_vec.push_back(i_ind + nr_points);
-				indices_draw_triangle_vec.push_back(i_ind + 1);
-				indices_draw_triangle_vec.push_back(i_ind + nr_points + 1);
-				//ind = ind + 6;
-			}
-
-			i_ind++;
-		}
-
-		y_prev = y; z_prev = z;
-	}
-
-	if(isStandard){///////////////////////// building standard /////////////////////////	
-		
 		vertices_vec_std.clear();
 		colors_vec_std.clear();
 		texcoors_vec_std.clear();
 		indices_draw_triangle_vec_std.clear();
 		normals_vec_std.clear();
 
-		vertices_vec_std = vertices_vec;
-		colors_vec_std = colors_vec;
-		texcoors_vec_std = texcoors_vec;
-		indices_draw_triangle_vec_std = indices_draw_triangle_vec;
-		normals_vec_std = normals_vec;
+		vertContainer_std_Rcontour_Leye.clear();
+		//vertContainer_std_Rcontour_Reye.clear();
+		//vertContainer_std_Lcontour_Leye.clear();
+		vertContainer_std_Lcontour_Reye.clear();
 
-		vertContainer_std_Rcontour.clear();
-		vertContainer_std_Lcontour.clear();
+		for (int j = 0; j < nr_points; j++) {  // 
 
-		vertContainer_std_Rcontour = vertContainer_Rcontour_Clpeye;
-		vertContainer_std_Lcontour = vertContainer_Lcontour_Clpeye;
+			y = -stimulus_height / 2 + j * step_size_height;
+			z = shapeDepth * cos(M_PI * y / stimulus_height);
 
-	}else{
+			total_distance_y = total_distance_y + sqrt(pow(y - y_prev, 2) + pow(z - z_prev, 2));
+			v = total_distance_y / textNormalizer + v_offset; //v coordinate
 
+			// shading should be consistent with texture depth
+			normal_x = 0;
+			normal_y = shapeDepth * sin(M_PI * y / stimulus_height) * M_PI / stimulus_height;
+			normal_z = 1;
+
+			vertContainer_std_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y, z)); 
+			//vertContainer_std_Rcontour_Reye.push_back(Vector3d(x_d_Rcontour_Reye, y, z));
+			//vertContainer_std_Lcontour_Leye.push_back(Vector3d(x_d_Lcontour_Leye, y, z)); 
+			vertContainer_std_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y, z));
+
+
+			for (int i = 0; i < nr_points; i++) { //
+
+				x = -stimulus_width / 2 + i * step_size_width;
+				u = (x + stimulus_width / 2) / textNormalizer + u_offset; //u coordinate. 
+	
+				//step 1: build the meshgrid using vertices, 
+				vertices_vec_std.push_back(x);
+				vertices_vec_std.push_back(y);
+				vertices_vec_std.push_back(z);
+
+				colors_vec_std.push_back(1);
+				colors_vec_std.push_back(0);
+				colors_vec_std.push_back(0);
+
+				texcoors_vec_std.push_back(u);
+				texcoors_vec_std.push_back(v);
+
+				normals_vec_std.push_back(normal_x );
+				normals_vec_std.push_back(normal_y );
+				normals_vec_std.push_back(normal_z );
+
+				//step 2: create an array/vector that store how the triangles should be drawn
+
+				// construct the triangle indices to be drawn
+				if (i < nr_points - 1 && j < nr_points - 1) {
+
+					indices_draw_triangle_vec_std.push_back(i_ind);
+					indices_draw_triangle_vec_std.push_back(i_ind + 1);
+					indices_draw_triangle_vec_std.push_back(i_ind + nr_points);
+
+					indices_draw_triangle_vec_std.push_back(i_ind + nr_points);
+					indices_draw_triangle_vec_std.push_back(i_ind + 1);
+					indices_draw_triangle_vec_std.push_back(i_ind + nr_points + 1);
+					//ind = ind + 6;
+				}
+
+				i_ind++;
+			}
+
+			y_prev = y; z_prev = z;
+		}
+
+	}else{///////////////////////// building comparison /////////////////////////
+	
 		vertices_vec_cmp.clear();
 		colors_vec_cmp.clear();
 		texcoors_vec_cmp.clear();
 		indices_draw_triangle_vec_cmp.clear();
 		normals_vec_cmp.clear();
+		normals_vec_cmp.clear();
 
-		vertices_vec_cmp = vertices_vec;
-		colors_vec_cmp = colors_vec;
-		texcoors_vec_cmp = texcoors_vec;
-		indices_draw_triangle_vec_cmp = indices_draw_triangle_vec;
-		normals_vec_cmp = normals_vec;
+		vertContainer_cmp_Rcontour_Leye.clear();
+		vertContainer_cmp_Rcontour_Reye.clear();
+		vertContainer_cmp_Lcontour_Leye.clear();
+		vertContainer_cmp_Lcontour_Reye.clear();
 
+		for (int j = 0; j < nr_points; j++) {  // 
 
-		vertContainer_cmp_Rcontour.clear();
-		vertContainer_cmp_Lcontour.clear();
+			y = -stimulus_height / 2 + j * step_size_height;
+			z = shapeDepth * cos(M_PI * y / stimulus_height);
 
-		vertContainer_cmp_Rcontour = vertContainer_Rcontour_Clpeye;
-		vertContainer_cmp_Lcontour = vertContainer_Lcontour_Clpeye;
+			total_distance_y = total_distance_y + sqrt(pow(y - y_prev, 2) + pow(z - z_prev, 2));
+			v = total_distance_y / textNormalizer + v_offset; //v coordinate
+
+			// shading should be consistent with texture depth
+			normal_x = 0;
+			normal_y = shapeDepth * sin(M_PI * y / stimulus_height) * M_PI / stimulus_height;
+			normal_z = 1;
+
+			vertContainer_cmp_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y, z)); 
+			//vertContainer_cmp_Rcontour_Reye.push_back(Vector3d(x_d_Rcontour_Reye, y, z));
+			//vertContainer_cmp_Lcontour_Leye.push_back(Vector3d(x_d_Lcontour_Leye, y, z)); 
+			vertContainer_cmp_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y, z));
+
+			for (int i = 0; i < nr_points; i++) { //
+
+				x = -stimulus_width / 2 + i * step_size_width;
+				u = (x + stimulus_width / 2) / textNormalizer + u_offset; //u coordinate. 
+	
+				//step 1: build the meshgrid using vertices, 
+				vertices_vec_cmp.push_back(x);
+				vertices_vec_cmp.push_back(y);
+				vertices_vec_cmp.push_back(z);
+
+				colors_vec_cmp.push_back(1);
+				colors_vec_cmp.push_back(0);
+				colors_vec_cmp.push_back(0);
+
+				texcoors_vec_cmp.push_back(u);
+				texcoors_vec_cmp.push_back(v);
+
+				normals_vec_cmp.push_back(normal_x);
+				normals_vec_cmp.push_back(normal_y);
+				normals_vec_cmp.push_back(normal_z);
+
+				//step 2: create an array/vector that store how the triangles should be drawn
+
+				// construct the triangle indices to be drawn
+				if (i < nr_points - 1 && j < nr_points - 1) {
+
+					indices_draw_triangle_vec_cmp.push_back(i_ind);
+					indices_draw_triangle_vec_cmp.push_back(i_ind + 1);
+					indices_draw_triangle_vec_cmp.push_back(i_ind + nr_points);
+
+					indices_draw_triangle_vec_cmp.push_back(i_ind + nr_points);
+					indices_draw_triangle_vec_cmp.push_back(i_ind + 1);
+					indices_draw_triangle_vec_cmp.push_back(i_ind + nr_points + 1);
+					//ind = ind + 6;
+				}
+
+				i_ind++;
+			}
+
+			y_prev = y; z_prev = z;
+		}
 	
 	}
 
@@ -153,15 +195,6 @@ void buildVertices_incongruent(bool isStandard, double textDepth, double dispDep
 
 	GLuint i_ind = 0;
 
-	std::vector<GLfloat> vertices_vec;
-	std::vector<GLfloat> texcoors_vec;
-	std::vector<GLfloat> colors_vec;
-	std::vector<GLfloat> normals_vec;
-	std::vector<GLuint> indices_draw_triangle_vec;
-
-	std::vector<Vector3d> vertContainer_Rcontour_Clpeye;
-	std::vector<Vector3d> vertContainer_Lcontour_Clpeye;
-
 	double x_t, y_t, z_t, y_t_prev, z_t_prev, u, v;
 	double w, x_d, y_d, z_d;
 	y_t_prev = -stimulus_height / 2; 
@@ -173,127 +206,119 @@ void buildVertices_incongruent(bool isStandard, double textDepth, double dispDep
 
 	double x_t_Rcontour = stimulus_visiblewidth / 2;
 	double x_t_Lcontour = -stimulus_visiblewidth / 2;
-	double x_d_Rcontour_Leye, x_d_Rcontour_Reye, x_d_Lcontour_Leye, x_d_Lcontour_Reye;
+//	double x_d_Rcontour_Leye, x_d_Rcontour_Reye, x_d_Lcontour_Leye, x_d_Lcontour_Reye;
 	double x_d_Rcontour_Clpeye, x_d_Lcontour_Clpeye;
 
 	double normal_x, normal_y, normal_z, normal_norm;
 	
-	for (int j = 0; j < nr_points; j++) {  // 
 
-		y_t = -stimulus_height / 2 + j * step_size_height;
-		z_t = textDepth * cos(M_PI * y_t / stimulus_height);
 
-		// shading should be consistent with texture depth
-		normal_x = 0;
-		normal_y = textDepth * sin(M_PI * y_t / stimulus_height) * M_PI / stimulus_height;
-		normal_z = 1;
-		//normal_norm = sqrt(pow(normal_y,2) + pow(normal_z, 2));
-
-		total_distance_y_t = total_distance_y_t + sqrt(pow(y_t - y_t_prev, 2) + pow(z_t - z_t_prev, 2));
-		v = total_distance_y_t / textNormalizer + v_offset; //v coordinate
-				
-		if(abs(y_t) < 0.01){
-			y_d = y_t;
-			z_d = dispDepth * cos(M_PI * y_d / stimulus_height) ;
-
-		}else if(abs( abs(y_t)- stimulus_height / 2) < 0.01){
-			y_d = y_t;
-			z_d = z_t;
-
-		}else{
-			c_cos = M_PI * y_t /(stimulus_height * (z_t - l));
-			z_d = NewtonSolver_Cosine(stimulus_height, dispDepth, c_cos, l, y_t, z_t);
-			w = (z_d - l)/(z_t - l);
-			y_d = w * y_t;
-
-		}
-
-		w = (z_d - l)/(z_t - l);
-
-		//x_d_Rcontour_Leye = -(interoculardistance / 2) + w * (x_t_Rcontour + interoculardistance / 2);
-		//x_d_Lcontour_Leye = -(interoculardistance / 2) + w * (x_t_Lcontour + interoculardistance / 2);
-		//x_d_Rcontour_Reye = (interoculardistance / 2) + w * (x_t_Rcontour - interoculardistance / 2);
-		//x_d_Lcontour_Reye = (interoculardistance / 2) + w * (x_t_Lcontour - interoculardistance / 2);
-		//vertContainer_std_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y_d, z_d)); 
-		//vertContainer_std_Rcontour_Reye.push_back(Vector3d(x_d_Rcontour_Reye, y_d, z_d));
-		//vertContainer_std_Lcontour_Leye.push_back(Vector3d(x_d_Lcontour_Leye, y_d, z_d)); 
-		//vertContainer_std_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y_d, z_d));
-		
-		x_d_Rcontour_Clpeye = w * x_t_Rcontour;
-		x_d_Lcontour_Clpeye = w * x_t_Lcontour ;
-
-		vertContainer_Rcontour_Clpeye.push_back(Vector3d(x_d_Rcontour_Clpeye, y_d, z_d)); 
-		vertContainer_Lcontour_Clpeye.push_back(Vector3d(x_d_Lcontour_Clpeye, y_d, z_d));
-
-		for (int i = 0; i < nr_points; i++) { //
-
-			x_t = -stimulus_width / 2 + i * step_size_width;
-			u = (x_t + stimulus_width / 2) / textNormalizer + u_offset; //u coordinate. 
-
-			x_d = x_t; 
-	
-			//step 1: build the meshgrid using vertices, 
-
-			vertices_vec.push_back(x_d);
-			vertices_vec.push_back(y_d);
-			vertices_vec.push_back(z_d);
-
-			colors_vec.push_back(1);
-			colors_vec.push_back(0);
-			colors_vec.push_back(0);
-
-			texcoors_vec.push_back(u);
-			texcoors_vec.push_back(v);
-
-			normals_vec.push_back(normal_x);
-			normals_vec.push_back(normal_y);
-			normals_vec.push_back(normal_z);
-
-			//step 2: create an array/vector that store how the triangles should be drawn
-
-			// construct the triangle indices to be drawn
-			if (i < nr_points - 1 && j < nr_points - 1) {
-
-				indices_draw_triangle_vec.push_back(i_ind);
-				indices_draw_triangle_vec.push_back(i_ind + 1);
-				indices_draw_triangle_vec.push_back(i_ind + nr_points);
-
-				indices_draw_triangle_vec.push_back(i_ind + nr_points);
-				indices_draw_triangle_vec.push_back(i_ind + 1);
-				indices_draw_triangle_vec.push_back(i_ind + nr_points + 1);
-				//ind = ind + 6;
-			}
-
-			i_ind++;
-
-		}
-				
-		y_t_prev = y_t; z_t_prev = z_t;
-	}
-
-	if(isStandard){///////////////////////// building standard /////////////////////////	
-		
+	if(isStandard){///////////////////////// building standard /////////////////////////
 		vertices_vec_std.clear();
 		colors_vec_std.clear();
 		texcoors_vec_std.clear();
 		indices_draw_triangle_vec_std.clear();
 		normals_vec_std.clear();
 
-		vertices_vec_std = vertices_vec;
-		colors_vec_std = colors_vec;
-		texcoors_vec_std = texcoors_vec;
-		indices_draw_triangle_vec_std = indices_draw_triangle_vec;
-		normals_vec_std = normals_vec;
+		vertContainer_std_Rcontour_Leye.clear();
+		//vertContainer_std_Rcontour_Reye.clear();
+		//vertContainer_std_Lcontour_Leye.clear();
+		vertContainer_std_Lcontour_Reye.clear();
 
+		for (int j = 0; j < nr_points; j++) {  // 
 
-		vertContainer_std_Rcontour.clear();
-		vertContainer_std_Lcontour.clear();
+			y_t = -stimulus_height / 2 + j * step_size_height;
+			z_t = textDepth * cos(M_PI * y_t / stimulus_height);
 
-		vertContainer_std_Rcontour = vertContainer_Rcontour_Clpeye;
-		vertContainer_std_Lcontour = vertContainer_Lcontour_Clpeye;
+			// shading should be consistent with texture depth
+			normal_x = 0;
+			normal_y = textDepth * sin(M_PI * y_t / stimulus_height) * M_PI / stimulus_height;
+			normal_z = 1;
+			normal_norm = sqrt(pow(normal_y,2) + pow(normal_z, 2));
 
+			total_distance_y_t = total_distance_y_t + sqrt(pow(y_t - y_t_prev, 2) + pow(z_t - z_t_prev, 2));
+			v = total_distance_y_t / textNormalizer + v_offset; //v coordinate
+			
+			
+			if(abs(y_t) < 0.01){
+				y_d = y_t;
+				z_d = dispDepth * cos(M_PI * y_d / stimulus_height) ;
 
-	}else{
+			}else if(abs( abs(y_t)- stimulus_height / 2) < 0.01){
+				y_d = y_t;
+				z_d = z_t;
+
+			}else{
+				c_cos = M_PI * y_t /(stimulus_height * (z_t - l));
+				z_d = NewtonSolver_Cosine(stimulus_height, dispDepth, c_cos, l, y_t, z_t);
+				w = (z_d - l)/(z_t - l);
+				y_d = w * y_t;
+
+			}
+
+			w = (z_d - l)/(z_t - l);
+
+			//x_d_Rcontour_Leye = -(interoculardistance / 2) + w * (x_t_Rcontour + interoculardistance / 2);
+			//x_d_Lcontour_Leye = -(interoculardistance / 2) + w * (x_t_Lcontour + interoculardistance / 2);
+			//x_d_Rcontour_Reye = (interoculardistance / 2) + w * (x_t_Rcontour - interoculardistance / 2);
+			//x_d_Lcontour_Reye = (interoculardistance / 2) + w * (x_t_Lcontour - interoculardistance / 2);
+			//vertContainer_std_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y_d, z_d)); 
+			//vertContainer_std_Rcontour_Reye.push_back(Vector3d(x_d_Rcontour_Reye, y_d, z_d));
+			//vertContainer_std_Lcontour_Leye.push_back(Vector3d(x_d_Lcontour_Leye, y_d, z_d)); 
+			//vertContainer_std_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y_d, z_d));
+			
+			x_d_Rcontour_Clpeye = w * x_t_Rcontour;
+			x_d_Lcontour_Clpeye = w * x_t_Lcontour ;
+
+			vertContainer_std_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Clpeye, y_d, z_d)); 
+			vertContainer_std_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Clpeye, y_d, z_d));
+
+			for (int i = 0; i < nr_points; i++) { //
+
+				x_t = -stimulus_width / 2 + i * step_size_width;
+				u = (x_t + stimulus_width / 2) / textNormalizer + u_offset; //u coordinate. 
+
+				x_d = x_t; 
+		
+				//step 1: build the meshgrid using vertices, 
+
+				vertices_vec_std.push_back(x_d);
+				vertices_vec_std.push_back(y_d);
+				vertices_vec_std.push_back(z_d);
+
+				colors_vec_std.push_back(1);
+				colors_vec_std.push_back(0);
+				colors_vec_std.push_back(0);
+
+				texcoors_vec_std.push_back(u);
+				texcoors_vec_std.push_back(v);
+
+				normals_vec_std.push_back(normal_x/normal_norm);
+				normals_vec_std.push_back(normal_y / normal_norm);
+				normals_vec_std.push_back(normal_z / normal_norm);
+
+				//step 2: create an array/vector that store how the triangles should be drawn
+
+				// construct the triangle indices to be drawn
+				if (i < nr_points - 1 && j < nr_points - 1) {
+
+					indices_draw_triangle_vec_std.push_back(i_ind);
+					indices_draw_triangle_vec_std.push_back(i_ind + 1);
+					indices_draw_triangle_vec_std.push_back(i_ind + nr_points);
+
+					indices_draw_triangle_vec_std.push_back(i_ind + nr_points);
+					indices_draw_triangle_vec_std.push_back(i_ind + 1);
+					indices_draw_triangle_vec_std.push_back(i_ind + nr_points + 1);
+					//ind = ind + 6;
+				}
+
+				i_ind++;
+
+			}
+					
+			y_t_prev = y_t; z_t_prev = z_t;
+		}
+	}else{///////////////////////// building comparison /////////////////////////
 
 		vertices_vec_cmp.clear();
 		colors_vec_cmp.clear();
@@ -301,19 +326,103 @@ void buildVertices_incongruent(bool isStandard, double textDepth, double dispDep
 		indices_draw_triangle_vec_cmp.clear();
 		normals_vec_cmp.clear();
 
-		vertices_vec_cmp = vertices_vec;
-		colors_vec_cmp = colors_vec;
-		texcoors_vec_cmp = texcoors_vec;
-		indices_draw_triangle_vec_cmp = indices_draw_triangle_vec;
-		normals_vec_cmp = normals_vec;
+		vertContainer_cmp_Rcontour_Leye.clear();
+		//vertContainer_cmp_Rcontour_Reye.clear();
+		//vertContainer_cmp_Lcontour_Leye.clear();
+		vertContainer_cmp_Lcontour_Reye.clear();
 
+		for (int j = 0; j < nr_points; j++) {  // 
 
-		vertContainer_cmp_Rcontour.clear();
-		vertContainer_cmp_Lcontour.clear();
+			y_t = -stimulus_height / 2 + j * step_size_height;
+			z_t = textDepth * cos(M_PI * y_t / stimulus_height);
 
-		vertContainer_cmp_Rcontour = vertContainer_Rcontour_Clpeye;
-		vertContainer_cmp_Lcontour = vertContainer_Lcontour_Clpeye;
-	
+			normal_x = 0;
+			normal_y = textDepth * sin(M_PI * y_t / stimulus_height) * M_PI / stimulus_height;
+			normal_z = 1;
+			normal_norm = sqrt(pow(normal_y, 2) + pow(normal_z, 2));
+
+			total_distance_y_t = total_distance_y_t + sqrt(pow(y_t - y_t_prev, 2) + pow(z_t - z_t_prev, 2));
+			v = total_distance_y_t / textNormalizer + v_offset; //v coordinate
+			
+			
+			if(abs(y_t) < 0.01){
+				y_d = y_t;
+				z_d = dispDepth * cos(M_PI * y_d / stimulus_height);
+				
+			}else if(abs( abs(y_t)- stimulus_height / 2) < 0.01){
+				y_d = y_t;
+				z_d = z_t;
+
+			}else{
+				c_cos = M_PI * y_t /(stimulus_height * (z_t - l));
+				z_d = NewtonSolver_Cosine(stimulus_height, dispDepth, c_cos, l, y_t, z_t);
+				w = (z_d - l)/(z_t - l);
+				y_d = w * y_t;
+
+			}
+
+			w = (z_d - l)/(z_t - l);
+			//x_d_Rcontour_Leye = -(interoculardistance / 2) + w * (x_t_Rcontour + interoculardistance / 2);
+			//x_d_Lcontour_Leye = -(interoculardistance / 2) + w * (x_t_Lcontour + interoculardistance / 2);
+			//x_d_Rcontour_Reye = (interoculardistance / 2) + w * (x_t_Rcontour - interoculardistance / 2);
+			//x_d_Lcontour_Reye = (interoculardistance / 2) + w * (x_t_Lcontour - interoculardistance / 2);
+
+			//vertContainer_cmp_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y_d, z_d)); 
+			//vertContainer_cmp_Rcontour_Reye.push_back(Vector3d(x_d_Rcontour_Reye, y_d, z_d));
+			//vertContainer_cmp_Lcontour_Leye.push_back(Vector3d(x_d_Lcontour_Leye, y_d, z_d)); 
+			//vertContainer_cmp_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y_d, z_d)); 
+
+			x_d_Rcontour_Clpeye = w * x_t_Rcontour;
+			x_d_Lcontour_Clpeye = w * x_t_Lcontour ;
+
+			vertContainer_cmp_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Clpeye, y_d, z_d)); 
+			vertContainer_cmp_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Clpeye, y_d, z_d));
+
+			for (int i = 0; i < nr_points; i++) { //
+
+				x_t = -stimulus_width / 2 + i * step_size_width;
+				u = (x_t + stimulus_width / 2) / textNormalizer + u_offset; //u coordinate. 
+
+				x_d = x_t; 
+		
+				//step 1: build the meshgrid using vertices, 
+
+				vertices_vec_cmp.push_back(x_d);
+				vertices_vec_cmp.push_back(y_d);
+				vertices_vec_cmp.push_back(z_d);
+
+				colors_vec_cmp.push_back(1);
+				colors_vec_cmp.push_back(0);
+				colors_vec_cmp.push_back(0);
+
+				texcoors_vec_cmp.push_back(u);
+				texcoors_vec_cmp.push_back(v);
+
+				normals_vec_cmp.push_back(normal_x / normal_norm);
+				normals_vec_cmp.push_back(normal_y / normal_norm);
+				normals_vec_cmp.push_back(normal_z / normal_norm);
+
+				//step 2: create an array/vector that store how the triangles should be drawn
+
+				// construct the triangle indices to be drawn
+				if (i < nr_points - 1 && j < nr_points - 1) {
+
+					indices_draw_triangle_vec_cmp.push_back(i_ind);
+					indices_draw_triangle_vec_cmp.push_back(i_ind + 1);
+					indices_draw_triangle_vec_cmp.push_back(i_ind + nr_points);
+
+					indices_draw_triangle_vec_cmp.push_back(i_ind + nr_points);
+					indices_draw_triangle_vec_cmp.push_back(i_ind + 1);
+					indices_draw_triangle_vec_cmp.push_back(i_ind + nr_points + 1);
+					//ind = ind + 6;
+				}
+
+				i_ind++;
+
+			}
+					
+			y_t_prev = y_t; z_t_prev = z_t;
+		}
 	}
 
 }
@@ -368,85 +477,85 @@ void drawPanels(bool isStandard, double displayDist, double dispDepth){
 
 	glPushMatrix();
 	glLoadIdentity();
-	glTranslated(0, 0, displayDist - dispDepth + 2);
+	glTranslated(visualTarget_X, 0, displayDist - dispDepth + 2);
 
 	if(isStandard){
 
-		n = int(vertContainer_std_Rcontour.size());
+		n = int(vertContainer_std_Rcontour_Leye.size());
 
 		if(n > 0){
 
 			// Right panels
 			glBegin(GL_QUAD_STRIP);
 
-			glVertex3f(vertContainer_std_Rcontour.at(0)[0] + panel_width,		vertContainer_std_Rcontour.at(0)[1] - panel_height_extra,			vertContainer_std_Rcontour.at(0)[2]); //0
-			glVertex3f(vertContainer_std_Rcontour.at(0)[0],					vertContainer_std_Rcontour.at(0)[1] - panel_height_extra,			vertContainer_std_Rcontour.at(0)[2]); //1
+			glVertex3f(vertContainer_std_Rcontour_Leye.at(0)[0] + panel_width,		vertContainer_std_Rcontour_Leye.at(0)[1] - panel_height_extra,			vertContainer_std_Rcontour_Leye.at(0)[2]); //0
+			glVertex3f(vertContainer_std_Rcontour_Leye.at(0)[0],					vertContainer_std_Rcontour_Leye.at(0)[1] - panel_height_extra,			vertContainer_std_Rcontour_Leye.at(0)[2]); //1
 
 			for (int i = 0; i < n; i++)
 			{	
-				glVertex3f(vertContainer_std_Rcontour.at(i)[0] + panel_width,		vertContainer_std_Rcontour.at(i)[1],			vertContainer_std_Rcontour.at(i)[2]); //0
-				glVertex3f(vertContainer_std_Rcontour.at(i)[0],					vertContainer_std_Rcontour.at(i)[1],			vertContainer_std_Rcontour.at(i)[2]); //1
+				glVertex3f(vertContainer_std_Rcontour_Leye.at(i)[0] + panel_width,		vertContainer_std_Rcontour_Leye.at(i)[1],			vertContainer_std_Rcontour_Leye.at(i)[2]); //0
+				glVertex3f(vertContainer_std_Rcontour_Leye.at(i)[0],					vertContainer_std_Rcontour_Leye.at(i)[1],			vertContainer_std_Rcontour_Leye.at(i)[2]); //1
 
 			}	
 
-			glVertex3f(vertContainer_std_Rcontour.at(n-1)[0] + panel_width,		vertContainer_std_Rcontour.at(n-1)[1] + panel_height_extra,			vertContainer_std_Rcontour.at(n-1)[2]); //0
-			glVertex3f(vertContainer_std_Rcontour.at(n-1)[0],					vertContainer_std_Rcontour.at(n-1)[1] + panel_height_extra,			vertContainer_std_Rcontour.at(n-1)[2]); //1
+			glVertex3f(vertContainer_std_Rcontour_Leye.at(n-1)[0] + panel_width,		vertContainer_std_Rcontour_Leye.at(n-1)[1] + panel_height_extra,			vertContainer_std_Rcontour_Leye.at(n-1)[2]); //0
+			glVertex3f(vertContainer_std_Rcontour_Leye.at(n-1)[0],					vertContainer_std_Rcontour_Leye.at(n-1)[1] + panel_height_extra,			vertContainer_std_Rcontour_Leye.at(n-1)[2]); //1
 
 			glEnd();
 
 			// Left panels
 			glBegin(GL_QUAD_STRIP);
 
-			glVertex3f(vertContainer_std_Lcontour.at(0)[0],		vertContainer_std_Lcontour.at(0)[1] - panel_height_extra,			vertContainer_std_Lcontour.at(0)[2]); //0
-			glVertex3f(vertContainer_std_Lcontour.at(0)[0] - panel_width,					vertContainer_std_Lcontour.at(0)[1] - panel_height_extra,			vertContainer_std_Lcontour.at(0)[2]); //1
+			glVertex3f(vertContainer_std_Lcontour_Reye.at(0)[0],		vertContainer_std_Lcontour_Reye.at(0)[1] - panel_height_extra,			vertContainer_std_Lcontour_Reye.at(0)[2]); //0
+			glVertex3f(vertContainer_std_Lcontour_Reye.at(0)[0] - panel_width,					vertContainer_std_Lcontour_Reye.at(0)[1] - panel_height_extra,			vertContainer_std_Lcontour_Reye.at(0)[2]); //1
 
 			for (int i = 0; i < n; i++)
 			{	
-				glVertex3f(vertContainer_std_Lcontour.at(i)[0],		vertContainer_std_Lcontour.at(i)[1],			vertContainer_std_Lcontour.at(i)[2]); //0
-				glVertex3f(vertContainer_std_Lcontour.at(i)[0] - panel_width,					vertContainer_std_Lcontour.at(i)[1],			vertContainer_std_Lcontour.at(i)[2]); //1
+				glVertex3f(vertContainer_std_Lcontour_Reye.at(i)[0],		vertContainer_std_Lcontour_Reye.at(i)[1],			vertContainer_std_Lcontour_Reye.at(i)[2]); //0
+				glVertex3f(vertContainer_std_Lcontour_Reye.at(i)[0] - panel_width,					vertContainer_std_Lcontour_Reye.at(i)[1],			vertContainer_std_Lcontour_Reye.at(i)[2]); //1
 
 			}	
 
-			glVertex3f(vertContainer_std_Lcontour.at(n-1)[0],		vertContainer_std_Lcontour.at(n-1)[1] + panel_height_extra,			vertContainer_std_Lcontour.at(n-1)[2]); //0
-			glVertex3f(vertContainer_std_Lcontour.at(n-1)[0] - panel_width,					vertContainer_std_Lcontour.at(n-1)[1] + panel_height_extra,			vertContainer_std_Lcontour.at(n-1)[2]); //1
+			glVertex3f(vertContainer_std_Lcontour_Reye.at(n-1)[0],		vertContainer_std_Lcontour_Reye.at(n-1)[1] + panel_height_extra,			vertContainer_std_Lcontour_Reye.at(n-1)[2]); //0
+			glVertex3f(vertContainer_std_Lcontour_Reye.at(n-1)[0] - panel_width,					vertContainer_std_Lcontour_Reye.at(n-1)[1] + panel_height_extra,			vertContainer_std_Lcontour_Reye.at(n-1)[2]); //1
 
 			glEnd();
 		}
 
 	}else{
 
-		n = int(vertContainer_cmp_Rcontour.size());
+		n = int(vertContainer_cmp_Rcontour_Leye.size());
 
 		if(n > 0){
 			// Right panels
 			glBegin(GL_QUAD_STRIP);
 
-			glVertex3f(vertContainer_cmp_Rcontour.at(0)[0] + panel_width,		vertContainer_cmp_Rcontour.at(0)[1] - panel_height_extra,			vertContainer_cmp_Rcontour.at(0)[2]); //0
-			glVertex3f(vertContainer_cmp_Rcontour.at(0)[0],					vertContainer_cmp_Rcontour.at(0)[1] - panel_height_extra,			vertContainer_cmp_Rcontour.at(0)[2]); //1
+			glVertex3f(vertContainer_cmp_Rcontour_Leye.at(0)[0] + panel_width,		vertContainer_cmp_Rcontour_Leye.at(0)[1] - panel_height_extra,			vertContainer_cmp_Rcontour_Leye.at(0)[2]); //0
+			glVertex3f(vertContainer_cmp_Rcontour_Leye.at(0)[0],					vertContainer_cmp_Rcontour_Leye.at(0)[1] - panel_height_extra,			vertContainer_cmp_Rcontour_Leye.at(0)[2]); //1
 			for (int i = 0; i < n; i++)
 			{	
-				glVertex3f(vertContainer_cmp_Rcontour.at(i)[0] + panel_width,		vertContainer_cmp_Rcontour.at(i)[1],			vertContainer_cmp_Rcontour.at(i)[2]); 
-				glVertex3f(vertContainer_cmp_Rcontour.at(i)[0],					vertContainer_cmp_Rcontour.at(i)[1],			vertContainer_cmp_Rcontour.at(i)[2]); 
+				glVertex3f(vertContainer_cmp_Rcontour_Leye.at(i)[0] + panel_width,		vertContainer_cmp_Rcontour_Leye.at(i)[1],			vertContainer_cmp_Rcontour_Leye.at(i)[2]); 
+				glVertex3f(vertContainer_cmp_Rcontour_Leye.at(i)[0],					vertContainer_cmp_Rcontour_Leye.at(i)[1],			vertContainer_cmp_Rcontour_Leye.at(i)[2]); 
 
 			}	
-			glVertex3f(vertContainer_cmp_Rcontour.at(n-1)[0] + panel_width,		vertContainer_cmp_Rcontour.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Rcontour.at(n-1)[2]); //0
-			glVertex3f(vertContainer_cmp_Rcontour.at(n-1)[0],					vertContainer_cmp_Rcontour.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Rcontour.at(n-1)[2]); //1
+			glVertex3f(vertContainer_cmp_Rcontour_Leye.at(n-1)[0] + panel_width,		vertContainer_cmp_Rcontour_Leye.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Rcontour_Leye.at(n-1)[2]); //0
+			glVertex3f(vertContainer_cmp_Rcontour_Leye.at(n-1)[0],					vertContainer_cmp_Rcontour_Leye.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Rcontour_Leye.at(n-1)[2]); //1
 
 			glEnd();
 
 			// Left panels
 			glBegin(GL_QUAD_STRIP);
 
-			glVertex3f(vertContainer_cmp_Lcontour.at(0)[0],		vertContainer_cmp_Lcontour.at(0)[1] - panel_height_extra,			vertContainer_cmp_Lcontour.at(0)[2]); //0
-			glVertex3f(vertContainer_cmp_Lcontour.at(0)[0] - panel_width,					vertContainer_cmp_Lcontour.at(0)[1] - panel_height_extra,			vertContainer_cmp_Lcontour.at(0)[2]); //1
+			glVertex3f(vertContainer_cmp_Lcontour_Reye.at(0)[0],		vertContainer_cmp_Lcontour_Reye.at(0)[1] - panel_height_extra,			vertContainer_cmp_Lcontour_Reye.at(0)[2]); //0
+			glVertex3f(vertContainer_cmp_Lcontour_Reye.at(0)[0] - panel_width,					vertContainer_cmp_Lcontour_Reye.at(0)[1] - panel_height_extra,			vertContainer_cmp_Lcontour_Reye.at(0)[2]); //1
 			for (int i = 0; i < n; i++)
 			{	
-				glVertex3f(vertContainer_cmp_Lcontour.at(i)[0],		vertContainer_cmp_Lcontour.at(i)[1],			vertContainer_cmp_Lcontour.at(i)[2]); //0
-				glVertex3f(vertContainer_cmp_Lcontour.at(i)[0] - panel_width,					vertContainer_cmp_Lcontour.at(i)[1],			vertContainer_cmp_Lcontour.at(i)[2]); //1
+				glVertex3f(vertContainer_cmp_Lcontour_Reye.at(i)[0],		vertContainer_cmp_Lcontour_Reye.at(i)[1],			vertContainer_cmp_Lcontour_Reye.at(i)[2]); //0
+				glVertex3f(vertContainer_cmp_Lcontour_Reye.at(i)[0] - panel_width,					vertContainer_cmp_Lcontour_Reye.at(i)[1],			vertContainer_cmp_Lcontour_Reye.at(i)[2]); //1
 
 			}	
-			glVertex3f(vertContainer_cmp_Lcontour.at(n-1)[0],		vertContainer_cmp_Lcontour.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Lcontour.at(n-1)[2]); //0
-			glVertex3f(vertContainer_cmp_Lcontour.at(n-1)[0] - panel_width,					vertContainer_cmp_Lcontour.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Lcontour.at(n-1)[2]); //1
+			glVertex3f(vertContainer_cmp_Lcontour_Reye.at(n-1)[0],		vertContainer_cmp_Lcontour_Reye.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Lcontour_Reye.at(n-1)[2]); //0
+			glVertex3f(vertContainer_cmp_Lcontour_Reye.at(n-1)[0] - panel_width,					vertContainer_cmp_Lcontour_Reye.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Lcontour_Reye.at(n-1)[2]); //1
 
 			glEnd();			
 
@@ -466,7 +575,7 @@ void drawPanel_Leye(bool isStandard, double displayDist, double dispDepth){
 
 		glPushMatrix();	
 		glLoadIdentity();
-		glTranslated(0, 0, displayDist - dispDepth + 2);
+		glTranslated(visualTarget_X, 0, displayDist - dispDepth + 2);
 		glColor3f(0.0f, 0.0f, 0.0f);
 
 		glBegin(GL_QUAD_STRIP);
@@ -519,7 +628,7 @@ void drawPanel_Reye(bool isStandard, double displayDist, double dispDepth){
 		glPushMatrix();
 
 		glLoadIdentity();
-		glTranslated(0, 0, displayDist - dispDepth + 2);
+		glTranslated(visualTarget_X, 0, displayDist - dispDepth + 2);
 		glColor3f(0.0f, 0.0f, 0.0f);
 
 		glBegin(GL_QUAD_STRIP);
@@ -561,15 +670,22 @@ void drawPanel_Reye(bool isStandard, double displayDist, double dispDepth){
 	}
 }
 
-float adjustAmbient(double textDepth){
-	float newAmbient = 0.4 - (textDepth - 20) * 0.005;
+
+float adjustAmbient(double textDepth, float maxInt, double rateAmbvsDiff_flat, double rateAmbvsDiff_deep, double Depth_flat, double Depth_deep){
+
+	double rateAmbvsDiff_new = rateAmbvsDiff_flat + (rateAmbvsDiff_deep - rateAmbvsDiff_flat) * (textDepth - Depth_flat)/(Depth_deep - Depth_flat);
+	float newAmbient = maxInt * (rateAmbvsDiff_new/(rateAmbvsDiff_new + 1));
+
 	return newAmbient;
 }
 
 void drawVertices(bool isStandard, int texNum, double displayDist, double dispDepth) {
 
-	
-    turnLightOn();
+		if(isStandard){
+			turnLightOn(amb_intensity_std);
+		}else{
+			turnLightOn(amb_intensity_cmp);
+			}
 
 	// enable matrices for use in drawing below
 	glEnable(GL_POLYGON_SMOOTH);
@@ -594,7 +710,7 @@ void drawVertices(bool isStandard, int texNum, double displayDist, double dispDe
 
 	glPushMatrix();
 	glLoadIdentity();
-	glTranslated(0, 0, displayDist - dispDepth);
+	glTranslated(visualTarget_X, 0, displayDist - dispDepth);
 
 	if(isStandard){
 
@@ -683,7 +799,7 @@ void drawFixation(double displayDist) {
 
 	glPushMatrix();
 	glLoadIdentity();
-	glTranslated(0, 0, displayDist);
+	glTranslated(visualTarget_X, 0, displayDist);
 	double cross_length = 5;
 	glBegin(GL_LINES);
 	glVertex3d(cross_length / 2, 0, 0);
@@ -730,11 +846,13 @@ void initOptotrak()
     optotrak->setTranslation(calibration);
 
 	//define Optotrak-specific variables
-    int numMarkers=22;
+    int numMarkers=24;
     float frameRate=85.0f;
     float markerFreq=4600.0f;
-    float dutyCycle=0.4f;
-    float voltage = 7.0f;
+    //float dutyCycle=0.4f;
+    //float voltage = 7.0f;
+	float dutyCycle = 0.66f;
+	float voltage = 10.0f;
 
 	// run the intiailization method for the Optotrak, checking to see if ever (if == 0) and catch the error if so
     if ( optotrak->init("C:/cncsvisiondata/camerafiles/Aligned20111014",numMarkers, frameRate, markerFreq, dutyCycle,voltage) != 0)
@@ -816,7 +934,7 @@ void initVariables()
 
 }
 
-void turnLightOn(){
+void turnLightOn(float ambIntensity){
 
 	glShadeModel(GL_SMOOTH); // enable Smooth Shading
 	glEnable(GL_LIGHTING); // enable lighting
@@ -827,8 +945,8 @@ void turnLightOn(){
 	glLoadIdentity();
 
 	// Light source parameters
-	GLfloat LightAmbient[]= { amb_intensity, 0.0f, 0.0f, 1.0f }; // non-directional & overall light (r,g,b,alpha): dark part
-	GLfloat LightDiffuse[]= { max_intensity - amb_intensity, 0.0f, 0.0f, 1.0f }; // light created by the light source (directional light; r,g,b,alpha): bright part
+	GLfloat LightAmbient[]= { ambIntensity, 0.0f, 0.0f, 1.0f }; // non-directional & overall light (r,g,b,alpha): dark part
+	GLfloat LightDiffuse[]= { max_intensity - ambIntensity, 0.0f, 0.0f, 1.0f }; // light created by the light source (directional light; r,g,b,alpha): bright part
 	GLfloat LightPosition[]= { 0.0f, 1.f, lightDir_z, 0.0f }; // Light Position (x, y, z, 1.0f); if w==0, directional; if w==1, positional lights. Attenuation can be applied only to the positional light 
 	
 	//setting the light
@@ -844,6 +962,7 @@ void turnLightOn(){
 	//glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, atten_weight); //default 0.0
 
 }
+
 
 void initBlock()
 {
@@ -868,16 +987,27 @@ void initStreams()
 
 	// Subject name
 	subjectName = parameters.find("SubjectName");
-
-	string responseFileName = experiment_directory +"/"+ subjectName  + ".txt";
-	// Principal streams files
-	if (util::fileExists(experiment_directory +"/"+subjectName+".txt") && subjectName != "junk")
+	string session = parameters.find("Session");
+	sessionNum = str2num<int>(parameters.find("Session"));
+/*
+	if ((sessionNum < 1 ) || (sessionNum > 2 ))
 	{
-		string error_on_file_io = experiment_directory+"/"+subjectName+".txt" + string(" already exists");
+		string error_on_file_io = string("invalid session number");
+		cerr << error_on_file_io << endl;
+		MessageBox(NULL, (LPCSTR)"INVALID SESSION",NULL, NULL);
+		shutdown();
+	}
+*/
+	string responseFileName = experiment_directory +"/"+ subjectName + "_p" + session + "_match.txt";
+	// Principal streams files
+	if (util::fileExists(experiment_directory +"/"+ subjectName + "_p" + session + "_match.txt") && subjectName != "junk")
+	{
+		string error_on_file_io = string("file already exists");
 		cerr << error_on_file_io << endl;
 		MessageBox(NULL, (LPCSTR)"FILE ALREADY EXISTS\n Please check the parameters file.",NULL, NULL);
 		shutdown();
 	}
+
 	responseFile.open(responseFileName.c_str());
 	responseFile << fixed << responseFile_headers << endl;
 	
@@ -969,16 +1099,10 @@ void drawInfo()
 				text.draw("# STD depth texture: " + stringify<double>(depth_std_text));
 				text.draw("# STD depth stereo: " + stringify<double>(depth_std_disp));
 				text.draw("                           ");
-				text.draw("# LIGHT amb intensity: " + stringify<double>(amb_intensity));
-				text.draw("# LIGHT z: " + stringify<float>(lightDir_z));
+				//text.draw("# LIGHT amb intensity: " + stringify<double>(amb_intensity_std));
+				//text.draw("# LIGHT z: " + stringify<float>(lightDir_z));
 				
-				
-				//text.draw("# current enum id: " + stringify<int>(panel_state));
-				
-				
-					// check if mirror is calibrated
-				if (abs(mirrorAlignment - 45.0) > 0.2)
-					text.draw("# !!!!Mirror Alignment = " + stringify<double>(mirrorAlignment));
+				text.draw("# !!!!Mirror Alignment = " + stringify<double>(mirrorAlignment));
 
 				break;
 
@@ -1005,6 +1129,9 @@ void drawInfo()
 				}else{
 					glColor3fv(glRed);
 					text.draw("Break time! Press + to continue");
+
+					if (abs(mirrorAlignment - 45.0) > 0.2)
+						text.draw("# !!!!Mirror Alignment = " + stringify<double>(mirrorAlignment));
 				}
 				break;
 
@@ -1116,7 +1243,8 @@ void initTrial()
 
 		depth_cmp = trial.getCurrent().second->getCurrentStaircase()->getState();
 	}
-	
+
+
 	jitter_z_std = (rand() % 201 - 100)/10.0; // from -10 to 10
 	display_distance_jittered_std = display_distance + jitter_z_std;
 
@@ -1140,6 +1268,9 @@ void initTrial()
 		texnum_cmp = rand() % 50 + 1;
 	}
 
+	amb_intensity_std = adjustAmbient(depth_std_text, max_intensity, 1.0, 0.6, 20, 40);
+	amb_intensity_cmp = adjustAmbient(depth_cmp, max_intensity, 1.0, 0.6, 20, 40);
+
 	trial_timer.reset();				
 	trial_timer.start();
 	ElapsedTime = 0;
@@ -1156,6 +1287,7 @@ void onlineTrial(){
 
 		if (ElapsedTime > fixateTime) {
 			current_stage = trial_present_first;
+			beepOk(19);
 		}
 		break;
 
@@ -1170,6 +1302,7 @@ void onlineTrial(){
 
 		if (ElapsedTime > (2 * fixateTime + viewTime)) {
 			current_stage = trial_present_second;
+			beepOk(20);
 		}
 		break;
 
@@ -1271,11 +1404,14 @@ void handleKeypress(unsigned char key, int x, int y)
 
 		case '1':
 			if(current_stage == stimulus_preview){
-				if (depth_std_text > depth_inc)
+				if (depth_std_text > depth_inc){
 					depth_std_text = depth_std_text - depth_inc;
+					depth_std_disp = depth_std_text;
+				}
 
-				amb_intensity = adjustAmbient(depth_std_text);
+				amb_intensity_std = adjustAmbient(depth_std_text, max_intensity, 1.0, 0.6, 20, 40);
 				initPreviewStimulus(depth_std_text, depth_std_disp);
+
 			}else if(current_stage == trial_respond){
 				trial_timer.stop();
 
@@ -1294,7 +1430,8 @@ void handleKeypress(unsigned char key, int x, int y)
 			if(current_stage == stimulus_preview){
 
 				depth_std_text = depth_std_text + depth_inc;
-				amb_intensity = adjustAmbient(depth_std_text);
+				depth_std_disp = depth_std_text;
+				amb_intensity_std = adjustAmbient(depth_std_text, max_intensity, 1.0, 0.6, 20, 40);
 				initPreviewStimulus(depth_std_text, depth_std_disp);
 			}else if(current_stage == trial_respond){
 				trial_timer.stop();
@@ -1330,10 +1467,14 @@ void handleKeypress(unsigned char key, int x, int y)
 				break;
 
 				case break_time:
-					beepOk(5);
-					visibleInfo = false;
-					trialNum++;
-					initTrial();
+					if(abs(mirrorAlignment - 45.0) < 0.2){
+						beepOk(5);
+						visibleInfo = false;
+						trialNum++;
+						initTrial();
+					}else{
+						beepOk(8);
+					}
 				break;		
 			}
 			break;
@@ -1342,6 +1483,7 @@ void handleKeypress(unsigned char key, int x, int y)
 		case 't':
 			if(training){
 				training = false;
+				visibleInfo = true;
 				beepOk(6);
 				trialNum = 0;
 				current_stage = break_time;
@@ -1357,7 +1499,8 @@ void handleKeypress(unsigned char key, int x, int y)
 				if (depth_std_disp > depth_inc)
 					depth_std_disp = depth_std_disp - depth_inc;
 
-				initPreviewStimulus(depth_std_text, depth_std_disp);
+				//lightDir_z = lightDir_z - 0.1;
+				//initPreviewStimulus(depth_std_text, depth_std_disp);
 				
 			}
 			break;
@@ -1367,7 +1510,8 @@ void handleKeypress(unsigned char key, int x, int y)
 				
 				depth_std_disp = depth_std_disp + depth_inc;
 
-				initPreviewStimulus(depth_std_text, depth_std_disp);
+				//lightDir_z = lightDir_z + 0.1;
+				//initPreviewStimulus(depth_std_text, depth_std_disp);
 				
 			}
 			break;
@@ -1410,6 +1554,10 @@ void beepOk(int tone)
 		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\beep-lowBubblePop.wav", NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
+	case 8: //spoken mirror
+		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\spoken-mirror.wav", NULL, SND_FILENAME | SND_ASYNC);
+	break;
+
 	case 15:
 		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\beep-rising.wav",
 			NULL, SND_FILENAME | SND_ASYNC);
@@ -1430,6 +1578,11 @@ void beepOk(int tone)
 		NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
+	case 19:
+		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\spoken-one.wav", NULL, SND_FILENAME | SND_ASYNC);
+		break;
+	case 20:
+		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\spoken-two.wav", NULL, SND_FILENAME | SND_ASYNC);
 	}
 	return;
 }
@@ -1445,35 +1598,46 @@ void idle()
 void online_apparatus_alignment()
 {
 	updateTheMarkers();
-    // mirror alignment check
-    mirrorAlignment = asin(
-        abs((markers.at(mirror1).p.z() - markers.at(mirror2).p.z())) /
-        sqrt(
-        pow(markers.at(mirror1).p.x() - markers.at(mirror2).p.x(), 2) +
-        pow(markers.at(mirror1).p.z() - markers.at(mirror2).p.z(), 2)
-        )
-        ) * 180 / M_PI;
+	// mirror alignment check
+	if(isVisible(markers.at(mirror1).p) && isVisible(markers.at(mirror2).p) ){
+		mirrorAlignment = asin(
+			abs((markers.at(mirror1).p.z() - markers.at(mirror2).p.z())) /
+			sqrt(
+			pow(markers.at(mirror1).p.x() - markers.at(mirror2).p.x(), 2) +
+			pow(markers.at(mirror1).p.z() - markers.at(mirror2).p.z(), 2)
+			)
+		   ) * 180 / M_PI;
+	}else{
+		mirrorAlignment = 45.09;//999;
+	}
 
     // screen Y alignment check
-    screenAlignmentY = asin(
-		abs((markers.at(screen1).p.y() - markers.at(screen3).p.y())) /
-		sqrt(
-		pow(markers.at(screen1).p.x() - markers.at(screen3).p.x(), 2) +
-		pow(markers.at(screen1).p.y() - markers.at(screen3).p.y(), 2)
-		)
-		) * 180 / M_PI;
+	if(isVisible(markers.at(screen1).p) && isVisible(markers.at(screen3).p) ){
+		screenAlignmentY = asin(
+			abs((markers.at(screen1).p.y() - markers.at(screen3).p.y())) /
+			sqrt(
+			pow(markers.at(screen1).p.x() - markers.at(screen3).p.x(), 2) +
+			pow(markers.at(screen1).p.y() - markers.at(screen3).p.y(), 2)
+			)
+			) * 180 / M_PI;
+	}else{
+		screenAlignmentY = 999;
+	}
 
     // screen Z alignment check
-    screenAlignmentZ = asin(
-		abs(markers.at(screen1).p.z() - markers.at(screen2).p.z()) /
-		sqrt(
-		pow(markers.at(screen1).p.x() - markers.at(screen2).p.x(), 2) +
-		pow(markers.at(screen1).p.z() - markers.at(screen2).p.z(), 2)
-		)
-		) * 180 / M_PI *
-		abs(markers.at(screen1).p.x() - markers.at(screen2).p.x()) /
-		(markers.at(screen1).p.x() - markers.at(screen2).p.x());
-
+	if(isVisible(markers.at(screen1).p) && isVisible(markers.at(screen2).p) ){
+		screenAlignmentZ = asin(
+			abs(markers.at(screen1).p.z() - markers.at(screen2).p.z()) /
+			sqrt(
+			pow(markers.at(screen1).p.x() - markers.at(screen2).p.x(), 2) +
+			pow(markers.at(screen1).p.z() - markers.at(screen2).p.z(), 2)
+			)
+			) * 180 / M_PI *
+			abs(markers.at(screen1).p.x() - markers.at(screen2).p.x()) /
+			(markers.at(screen1).p.x() - markers.at(screen2).p.x());
+	}else{
+		screenAlignmentZ = 999;
+	}
 }
 
 int LoadGLTextures()  // Load PNG And Convert To Textures
