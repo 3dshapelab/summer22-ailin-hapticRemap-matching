@@ -1,5 +1,6 @@
 #include "targetver.h"
 
+#include <stdio.h>
 #include <cstdlib>
 #include <cmath>
 #include <math.h>
@@ -36,7 +37,6 @@
 #include "GLUtils.h"
 #include "VRCamera.h"
 #include "CoordinatesExtractor.h"
-#include "StimulusDrawer.h"
 #include "GLText.h"
 
 #include "ParametersLoader.h"
@@ -51,6 +51,9 @@
 #include "Optotrak2.h"
 #include "Marker.h"
 #include "BrownMotorFunctions.h"
+
+#include <random>
+#include <functional> // to help with thread safe randomization thread
 
 #include "SOIL.h"//Library for texture mapping
 
@@ -68,12 +71,12 @@ const float DEG2RAD = M_PI / 180;
 
 /********* VARIABLES OBJECTS  **********************/
 VRCamera cam;
-Optotrak2* optotrak;
+Optotrak2 optotrak;
 Screen screen;
 CoordinatesExtractor headEyeCoords;
 
 /***** CALIBRATION FILE *****/
-#include "LatestCalibration.h"
+#include "Calibration_017B.h"
 static const Vector3d center(0, 0, focalDistance);
 double mirrorAlignment = 45.0, screenAlignmentY = 0.0, screenAlignmentZ = 0.0;
 
@@ -96,7 +99,7 @@ TrialGenerator<double> trial;//if using staircase:
 
 /*************************** INPUT AND OUTPUT ****************************/
 // experiment directory
-string experiment_directory = "C:/Users/visionlab/Documents/data/ailin/summer22-ailin-hapticRemap-matching";
+string experiment_directory = "C:/Users/labdomin/Documents/data/ailin/summer22-ailin-hapticRemap-matching";
 
 // paramters file directory and name
 ifstream parametersFile;
@@ -163,17 +166,9 @@ double gauss_sig_height_ratio = 0.16;
 
 /********** BLOCKING PANELS ***************/
 enum panelStates{no_aperture, black_aperture, red_aperture};
-panelStates panel_state = black_aperture;
+panelStates panel_state = red_aperture; //black_aperture;
 
-std::vector<Vector3d> vertContainer_std_Rcontour_Leye;
-std::vector<Vector3d> vertContainer_std_Rcontour_Reye;
-std::vector<Vector3d> vertContainer_std_Lcontour_Leye;
-std::vector<Vector3d> vertContainer_std_Lcontour_Reye;
 
-std::vector<Vector3d> vertContainer_cmp_Rcontour_Leye;
-std::vector<Vector3d> vertContainer_cmp_Rcontour_Reye;
-std::vector<Vector3d> vertContainer_cmp_Lcontour_Leye;
-std::vector<Vector3d> vertContainer_cmp_Lcontour_Reye;
 
 /********** STIMULUS VERTICES ***************/
 int nr_points = 201;
@@ -184,12 +179,28 @@ std::vector<GLfloat> colors_vec_std;
 std::vector<GLfloat> normals_vec_std;
 std::vector<GLuint> indices_draw_triangle_vec_std;
 
+std::vector<Vector3d> vertContainer_std_Rcontour;
+std::vector<Vector3d> vertContainer_std_Lcontour;
+
+
 std::vector<GLfloat> vertices_vec_cmp;
 std::vector<GLfloat> texcoors_vec_cmp;
 std::vector<GLfloat> colors_vec_cmp;
 std::vector<GLfloat> normals_vec_cmp;
 std::vector<GLuint> indices_draw_triangle_vec_cmp;
 
+std::vector<Vector3d> vertContainer_cmp_Rcontour;
+std::vector<Vector3d> vertContainer_cmp_Lcontour;
+
+//std::vector<Vector3d> vertContainer_std_Rcontour_Leye;
+//std::vector<Vector3d> vertContainer_std_Rcontour_Reye;
+//std::vector<Vector3d> vertContainer_std_Lcontour_Leye;
+//std::vector<Vector3d> vertContainer_std_Lcontour_Reye;
+
+//std::vector<Vector3d> vertContainer_cmp_Rcontour_Leye;
+//std::vector<Vector3d> vertContainer_cmp_Rcontour_Reye;
+//std::vector<Vector3d> vertContainer_cmp_Lcontour_Leye;
+//std::vector<Vector3d> vertContainer_cmp_Lcontour_Reye;
 
 
 // texture map
@@ -220,7 +231,7 @@ bool stimulusDim_retinal_vs_physical = true;
 bool training = true;
 bool visibleInfo = true;
 
-bool resetScreen_betweenRuns = false;
+bool resetScreen_betweenRuns = true;
 
 int errorID = 0;
 /********** TIME ***************/
@@ -230,6 +241,11 @@ double ElapsedTime, lastTimeStamp, responseTime;
 
 double fixateTime = 500;
 double viewTime = 650;
+
+int TimerFrameCnt = 0;
+int last_timer_frame_cnt = 0;
+int fixateFrameCnt = 40;
+int viewFrameCnt = 50;
 
 /*********** for DEBUGGING **********/
 
