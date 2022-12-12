@@ -1,5 +1,5 @@
 // this script aims to use probe adjustment task to measure the gain/strength of either texture or disparity as a depth cue
-#include "stdafx.h"
+#include "summer22-ailin-hapticRemap-matching.h"
 
 void initPreviewStimulus(double textDepth, double dispDepth) {
 
@@ -30,10 +30,12 @@ void buildVertices_congruent(bool isStandard, double shapeDepth, double textNorm
 
 	double normal_x, normal_y, normal_z;
 
-	double x_d_Rcontour_Leye = stimulus_visiblewidth / 2;
+	double x_Rcontour = stimulus_visiblewidth / 2;
+	double x_Lcontour = -stimulus_visiblewidth / 2;
+	//double x_d_Rcontour_Leye = stimulus_visiblewidth / 2;
 	//double x_d_Lcontour_Leye = -stimulus_visiblewidth / 2;
 	//double x_d_Rcontour_Reye = stimulus_visiblewidth / 2;
-	double x_d_Lcontour_Reye = -stimulus_visiblewidth / 2;
+	//double x_d_Lcontour_Reye = -stimulus_visiblewidth / 2;
 	
 	if(isStandard){///////////////////////// building standard /////////////////////////
 
@@ -43,10 +45,12 @@ void buildVertices_congruent(bool isStandard, double shapeDepth, double textNorm
 		indices_draw_triangle_vec_std.clear();
 		normals_vec_std.clear();
 
-		vertContainer_std_Rcontour_Leye.clear();
+		vertContainer_std_Lcontour.clear();
+		vertContainer_std_Rcontour.clear();
+		//vertContainer_std_Rcontour_Leye.clear();
 		//vertContainer_std_Rcontour_Reye.clear();
 		//vertContainer_std_Lcontour_Leye.clear();
-		vertContainer_std_Lcontour_Reye.clear();
+		//vertContainer_std_Lcontour_Reye.clear();
 
 		for (int j = 0; j < nr_points; j++) {  // 
 
@@ -61,10 +65,13 @@ void buildVertices_congruent(bool isStandard, double shapeDepth, double textNorm
 			normal_y = shapeDepth * sin(M_PI * y / stimulus_height) * M_PI / stimulus_height;
 			normal_z = 1;
 
-			vertContainer_std_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y, z)); 
+
+			vertContainer_std_Rcontour.push_back(Vector3d(x_Rcontour, y, z));
+			vertContainer_std_Lcontour.push_back(Vector3d(x_Lcontour, y, z));
+			//vertContainer_std_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y, z)); 
 			//vertContainer_std_Rcontour_Reye.push_back(Vector3d(x_d_Rcontour_Reye, y, z));
 			//vertContainer_std_Lcontour_Leye.push_back(Vector3d(x_d_Lcontour_Leye, y, z)); 
-			vertContainer_std_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y, z));
+			//vertContainer_std_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y, z));
 
 
 			for (int i = 0; i < nr_points; i++) { //
@@ -118,10 +125,12 @@ void buildVertices_congruent(bool isStandard, double shapeDepth, double textNorm
 		normals_vec_cmp.clear();
 		normals_vec_cmp.clear();
 
-		vertContainer_cmp_Rcontour_Leye.clear();
-		vertContainer_cmp_Rcontour_Reye.clear();
-		vertContainer_cmp_Lcontour_Leye.clear();
-		vertContainer_cmp_Lcontour_Reye.clear();
+		vertContainer_cmp_Rcontour.clear();
+		vertContainer_cmp_Lcontour.clear();
+		//vertContainer_cmp_Rcontour_Leye.clear();
+		//vertContainer_cmp_Rcontour_Reye.clear();
+		//vertContainer_cmp_Lcontour_Leye.clear();
+		//vertContainer_cmp_Lcontour_Reye.clear();
 
 		for (int j = 0; j < nr_points; j++) {  // 
 
@@ -136,10 +145,12 @@ void buildVertices_congruent(bool isStandard, double shapeDepth, double textNorm
 			normal_y = shapeDepth * sin(M_PI * y / stimulus_height) * M_PI / stimulus_height;
 			normal_z = 1;
 
-			vertContainer_cmp_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y, z)); 
+			vertContainer_cmp_Rcontour.push_back(Vector3d(x_Rcontour, y, z));
+			vertContainer_cmp_Lcontour.push_back(Vector3d(x_Lcontour, y, z));
+			//vertContainer_cmp_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Leye, y, z)); 
 			//vertContainer_cmp_Rcontour_Reye.push_back(Vector3d(x_d_Rcontour_Reye, y, z));
 			//vertContainer_cmp_Lcontour_Leye.push_back(Vector3d(x_d_Lcontour_Leye, y, z)); 
-			vertContainer_cmp_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y, z));
+			//vertContainer_cmp_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y, z));
 
 			for (int i = 0; i < nr_points; i++) { //
 
@@ -220,10 +231,12 @@ void buildVertices_incongruent(bool isStandard, double textDepth, double dispDep
 		indices_draw_triangle_vec_std.clear();
 		normals_vec_std.clear();
 
-		vertContainer_std_Rcontour_Leye.clear();
+		vertContainer_std_Lcontour.clear();
+		vertContainer_std_Rcontour.clear();
+		//vertContainer_std_Rcontour_Leye.clear();
 		//vertContainer_std_Rcontour_Reye.clear();
 		//vertContainer_std_Lcontour_Leye.clear();
-		vertContainer_std_Lcontour_Reye.clear();
+		//vertContainer_std_Lcontour_Reye.clear();
 
 		for (int j = 0; j < nr_points; j++) {  // 
 
@@ -268,10 +281,10 @@ void buildVertices_incongruent(bool isStandard, double textDepth, double dispDep
 			//vertContainer_std_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Reye, y_d, z_d));
 			
 			x_d_Rcontour_Clpeye = w * x_t_Rcontour;
-			x_d_Lcontour_Clpeye = w * x_t_Lcontour ;
+			x_d_Lcontour_Clpeye = w * x_t_Lcontour;
 
-			vertContainer_std_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Clpeye, y_d, z_d)); 
-			vertContainer_std_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Clpeye, y_d, z_d));
+			vertContainer_std_Rcontour.push_back(Vector3d(x_d_Rcontour_Clpeye, y_d, z_d)); 
+			vertContainer_std_Lcontour.push_back(Vector3d(x_d_Lcontour_Clpeye, y_d, z_d));
 
 			for (int i = 0; i < nr_points; i++) { //
 
@@ -326,10 +339,13 @@ void buildVertices_incongruent(bool isStandard, double textDepth, double dispDep
 		indices_draw_triangle_vec_cmp.clear();
 		normals_vec_cmp.clear();
 
-		vertContainer_cmp_Rcontour_Leye.clear();
+		vertContainer_cmp_Rcontour.clear();
+		vertContainer_cmp_Lcontour.clear();
+		// 
+		//vertContainer_cmp_Rcontour_Leye.clear();
 		//vertContainer_cmp_Rcontour_Reye.clear();
 		//vertContainer_cmp_Lcontour_Leye.clear();
-		vertContainer_cmp_Lcontour_Reye.clear();
+		//vertContainer_cmp_Lcontour_Reye.clear();
 
 		for (int j = 0; j < nr_points; j++) {  // 
 
@@ -375,8 +391,8 @@ void buildVertices_incongruent(bool isStandard, double textDepth, double dispDep
 			x_d_Rcontour_Clpeye = w * x_t_Rcontour;
 			x_d_Lcontour_Clpeye = w * x_t_Lcontour ;
 
-			vertContainer_cmp_Rcontour_Leye.push_back(Vector3d(x_d_Rcontour_Clpeye, y_d, z_d)); 
-			vertContainer_cmp_Lcontour_Reye.push_back(Vector3d(x_d_Lcontour_Clpeye, y_d, z_d));
+			vertContainer_cmp_Rcontour.push_back(Vector3d(x_d_Rcontour_Clpeye, y_d, z_d)); 
+			vertContainer_cmp_Lcontour.push_back(Vector3d(x_d_Lcontour_Clpeye, y_d, z_d));
 
 			for (int i = 0; i < nr_points; i++) { //
 
@@ -481,81 +497,81 @@ void drawPanels(bool isStandard, double displayDist, double dispDepth){
 
 	if(isStandard){
 
-		n = int(vertContainer_std_Rcontour_Leye.size());
+		n = int(vertContainer_std_Rcontour.size());
 
 		if(n > 0){
 
 			// Right panels
 			glBegin(GL_QUAD_STRIP);
 
-			glVertex3f(vertContainer_std_Rcontour_Leye.at(0)[0] + panel_width,		vertContainer_std_Rcontour_Leye.at(0)[1] - panel_height_extra,			vertContainer_std_Rcontour_Leye.at(0)[2]); //0
-			glVertex3f(vertContainer_std_Rcontour_Leye.at(0)[0],					vertContainer_std_Rcontour_Leye.at(0)[1] - panel_height_extra,			vertContainer_std_Rcontour_Leye.at(0)[2]); //1
+			glVertex3f(vertContainer_std_Rcontour.at(0)[0] + panel_width,		vertContainer_std_Rcontour.at(0)[1] - panel_height_extra,			vertContainer_std_Rcontour.at(0)[2]); //0
+			glVertex3f(vertContainer_std_Rcontour.at(0)[0],					vertContainer_std_Rcontour.at(0)[1] - panel_height_extra,			vertContainer_std_Rcontour.at(0)[2]); //1
 
 			for (int i = 0; i < n; i++)
 			{	
-				glVertex3f(vertContainer_std_Rcontour_Leye.at(i)[0] + panel_width,		vertContainer_std_Rcontour_Leye.at(i)[1],			vertContainer_std_Rcontour_Leye.at(i)[2]); //0
-				glVertex3f(vertContainer_std_Rcontour_Leye.at(i)[0],					vertContainer_std_Rcontour_Leye.at(i)[1],			vertContainer_std_Rcontour_Leye.at(i)[2]); //1
+				glVertex3f(vertContainer_std_Rcontour.at(i)[0] + panel_width,		vertContainer_std_Rcontour.at(i)[1],			vertContainer_std_Rcontour.at(i)[2]); //0
+				glVertex3f(vertContainer_std_Rcontour.at(i)[0],					vertContainer_std_Rcontour.at(i)[1],			vertContainer_std_Rcontour.at(i)[2]); //1
 
 			}	
 
-			glVertex3f(vertContainer_std_Rcontour_Leye.at(n-1)[0] + panel_width,		vertContainer_std_Rcontour_Leye.at(n-1)[1] + panel_height_extra,			vertContainer_std_Rcontour_Leye.at(n-1)[2]); //0
-			glVertex3f(vertContainer_std_Rcontour_Leye.at(n-1)[0],					vertContainer_std_Rcontour_Leye.at(n-1)[1] + panel_height_extra,			vertContainer_std_Rcontour_Leye.at(n-1)[2]); //1
+			glVertex3f(vertContainer_std_Rcontour.at(n-1)[0] + panel_width,		vertContainer_std_Rcontour.at(n-1)[1] + panel_height_extra,			vertContainer_std_Rcontour.at(n-1)[2]); //0
+			glVertex3f(vertContainer_std_Rcontour.at(n-1)[0],					vertContainer_std_Rcontour.at(n-1)[1] + panel_height_extra,			vertContainer_std_Rcontour.at(n-1)[2]); //1
 
 			glEnd();
 
 			// Left panels
 			glBegin(GL_QUAD_STRIP);
 
-			glVertex3f(vertContainer_std_Lcontour_Reye.at(0)[0],		vertContainer_std_Lcontour_Reye.at(0)[1] - panel_height_extra,			vertContainer_std_Lcontour_Reye.at(0)[2]); //0
-			glVertex3f(vertContainer_std_Lcontour_Reye.at(0)[0] - panel_width,					vertContainer_std_Lcontour_Reye.at(0)[1] - panel_height_extra,			vertContainer_std_Lcontour_Reye.at(0)[2]); //1
+			glVertex3f(vertContainer_std_Lcontour.at(0)[0],		vertContainer_std_Lcontour.at(0)[1] - panel_height_extra,			vertContainer_std_Lcontour.at(0)[2]); //0
+			glVertex3f(vertContainer_std_Lcontour.at(0)[0] - panel_width,					vertContainer_std_Lcontour.at(0)[1] - panel_height_extra,			vertContainer_std_Lcontour.at(0)[2]); //1
 
 			for (int i = 0; i < n; i++)
 			{	
-				glVertex3f(vertContainer_std_Lcontour_Reye.at(i)[0],		vertContainer_std_Lcontour_Reye.at(i)[1],			vertContainer_std_Lcontour_Reye.at(i)[2]); //0
-				glVertex3f(vertContainer_std_Lcontour_Reye.at(i)[0] - panel_width,					vertContainer_std_Lcontour_Reye.at(i)[1],			vertContainer_std_Lcontour_Reye.at(i)[2]); //1
+				glVertex3f(vertContainer_std_Lcontour.at(i)[0],		vertContainer_std_Lcontour.at(i)[1],			vertContainer_std_Lcontour.at(i)[2]); //0
+				glVertex3f(vertContainer_std_Lcontour.at(i)[0] - panel_width,					vertContainer_std_Lcontour.at(i)[1],			vertContainer_std_Lcontour.at(i)[2]); //1
 
 			}	
 
-			glVertex3f(vertContainer_std_Lcontour_Reye.at(n-1)[0],		vertContainer_std_Lcontour_Reye.at(n-1)[1] + panel_height_extra,			vertContainer_std_Lcontour_Reye.at(n-1)[2]); //0
-			glVertex3f(vertContainer_std_Lcontour_Reye.at(n-1)[0] - panel_width,					vertContainer_std_Lcontour_Reye.at(n-1)[1] + panel_height_extra,			vertContainer_std_Lcontour_Reye.at(n-1)[2]); //1
+			glVertex3f(vertContainer_std_Lcontour.at(n-1)[0],		vertContainer_std_Lcontour.at(n-1)[1] + panel_height_extra,			vertContainer_std_Lcontour.at(n-1)[2]); //0
+			glVertex3f(vertContainer_std_Lcontour.at(n-1)[0] - panel_width,					vertContainer_std_Lcontour.at(n-1)[1] + panel_height_extra,			vertContainer_std_Lcontour.at(n-1)[2]); //1
 
 			glEnd();
 		}
 
 	}else{
 
-		n = int(vertContainer_cmp_Rcontour_Leye.size());
+		n = int(vertContainer_cmp_Rcontour.size());
 
 		if(n > 0){
 			// Right panels
 			glBegin(GL_QUAD_STRIP);
 
-			glVertex3f(vertContainer_cmp_Rcontour_Leye.at(0)[0] + panel_width,		vertContainer_cmp_Rcontour_Leye.at(0)[1] - panel_height_extra,			vertContainer_cmp_Rcontour_Leye.at(0)[2]); //0
-			glVertex3f(vertContainer_cmp_Rcontour_Leye.at(0)[0],					vertContainer_cmp_Rcontour_Leye.at(0)[1] - panel_height_extra,			vertContainer_cmp_Rcontour_Leye.at(0)[2]); //1
+			glVertex3f(vertContainer_cmp_Rcontour.at(0)[0] + panel_width,		vertContainer_cmp_Rcontour.at(0)[1] - panel_height_extra,			vertContainer_cmp_Rcontour.at(0)[2]); //0
+			glVertex3f(vertContainer_cmp_Rcontour.at(0)[0],					vertContainer_cmp_Rcontour.at(0)[1] - panel_height_extra,			vertContainer_cmp_Rcontour.at(0)[2]); //1
 			for (int i = 0; i < n; i++)
 			{	
-				glVertex3f(vertContainer_cmp_Rcontour_Leye.at(i)[0] + panel_width,		vertContainer_cmp_Rcontour_Leye.at(i)[1],			vertContainer_cmp_Rcontour_Leye.at(i)[2]); 
-				glVertex3f(vertContainer_cmp_Rcontour_Leye.at(i)[0],					vertContainer_cmp_Rcontour_Leye.at(i)[1],			vertContainer_cmp_Rcontour_Leye.at(i)[2]); 
+				glVertex3f(vertContainer_cmp_Rcontour.at(i)[0] + panel_width,		vertContainer_cmp_Rcontour.at(i)[1],			vertContainer_cmp_Rcontour.at(i)[2]); 
+				glVertex3f(vertContainer_cmp_Rcontour.at(i)[0],					vertContainer_cmp_Rcontour.at(i)[1],			vertContainer_cmp_Rcontour.at(i)[2]); 
 
 			}	
-			glVertex3f(vertContainer_cmp_Rcontour_Leye.at(n-1)[0] + panel_width,		vertContainer_cmp_Rcontour_Leye.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Rcontour_Leye.at(n-1)[2]); //0
-			glVertex3f(vertContainer_cmp_Rcontour_Leye.at(n-1)[0],					vertContainer_cmp_Rcontour_Leye.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Rcontour_Leye.at(n-1)[2]); //1
+			glVertex3f(vertContainer_cmp_Rcontour.at(n-1)[0] + panel_width,		vertContainer_cmp_Rcontour.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Rcontour.at(n-1)[2]); //0
+			glVertex3f(vertContainer_cmp_Rcontour.at(n-1)[0],					vertContainer_cmp_Rcontour.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Rcontour.at(n-1)[2]); //1
 
 			glEnd();
 
 			// Left panels
 			glBegin(GL_QUAD_STRIP);
 
-			glVertex3f(vertContainer_cmp_Lcontour_Reye.at(0)[0],		vertContainer_cmp_Lcontour_Reye.at(0)[1] - panel_height_extra,			vertContainer_cmp_Lcontour_Reye.at(0)[2]); //0
-			glVertex3f(vertContainer_cmp_Lcontour_Reye.at(0)[0] - panel_width,					vertContainer_cmp_Lcontour_Reye.at(0)[1] - panel_height_extra,			vertContainer_cmp_Lcontour_Reye.at(0)[2]); //1
+			glVertex3f(vertContainer_cmp_Lcontour.at(0)[0],		vertContainer_cmp_Lcontour.at(0)[1] - panel_height_extra,			vertContainer_cmp_Lcontour.at(0)[2]); //0
+			glVertex3f(vertContainer_cmp_Lcontour.at(0)[0] - panel_width,					vertContainer_cmp_Lcontour.at(0)[1] - panel_height_extra,			vertContainer_cmp_Lcontour.at(0)[2]); //1
 			for (int i = 0; i < n; i++)
 			{	
-				glVertex3f(vertContainer_cmp_Lcontour_Reye.at(i)[0],		vertContainer_cmp_Lcontour_Reye.at(i)[1],			vertContainer_cmp_Lcontour_Reye.at(i)[2]); //0
-				glVertex3f(vertContainer_cmp_Lcontour_Reye.at(i)[0] - panel_width,					vertContainer_cmp_Lcontour_Reye.at(i)[1],			vertContainer_cmp_Lcontour_Reye.at(i)[2]); //1
+				glVertex3f(vertContainer_cmp_Lcontour.at(i)[0],		vertContainer_cmp_Lcontour.at(i)[1],			vertContainer_cmp_Lcontour.at(i)[2]); //0
+				glVertex3f(vertContainer_cmp_Lcontour.at(i)[0] - panel_width,					vertContainer_cmp_Lcontour.at(i)[1],			vertContainer_cmp_Lcontour.at(i)[2]); //1
 
 			}	
-			glVertex3f(vertContainer_cmp_Lcontour_Reye.at(n-1)[0],		vertContainer_cmp_Lcontour_Reye.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Lcontour_Reye.at(n-1)[2]); //0
-			glVertex3f(vertContainer_cmp_Lcontour_Reye.at(n-1)[0] - panel_width,					vertContainer_cmp_Lcontour_Reye.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Lcontour_Reye.at(n-1)[2]); //1
+			glVertex3f(vertContainer_cmp_Lcontour.at(n-1)[0],		vertContainer_cmp_Lcontour.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Lcontour.at(n-1)[2]); //0
+			glVertex3f(vertContainer_cmp_Lcontour.at(n-1)[0] - panel_width,					vertContainer_cmp_Lcontour.at(n-1)[1] + panel_height_extra,			vertContainer_cmp_Lcontour.at(n-1)[2]); //1
 
 			glEnd();			
 
@@ -566,7 +582,7 @@ void drawPanels(bool isStandard, double displayDist, double dispDepth){
 }
 
 void drawPanel_Leye(bool isStandard, double displayDist, double dispDepth){
-
+	/*
 	float panel_width = 40;
 	float panel_height_extra = 20;
 	int n = int(vertContainer_std_Rcontour_Leye.size());
@@ -614,12 +630,12 @@ void drawPanel_Leye(bool isStandard, double displayDist, double dispDepth){
 		glEnd();
 		glPopMatrix();
 	}
-	
+	*/
 }
 
 
 void drawPanel_Reye(bool isStandard, double displayDist, double dispDepth){
-
+	/*
 	float panel_width = 40;
 	float panel_height_extra = 20;
 	int n = int(vertContainer_std_Rcontour_Reye.size());
@@ -668,6 +684,7 @@ void drawPanel_Reye(bool isStandard, double displayDist, double dispDepth){
 
 		glPopMatrix();
 	}
+	*/
 }
 
 
@@ -823,8 +840,7 @@ void shutdown(){
 void cleanup() 
 {
 // Stop the optotrak
-    optotrak->stopCollection();
-    delete optotrak;
+    optotrak.stopCollection();
 }
 void initProjectionScreen(double _focalDist, const Affine3d &_transformation, bool synchronous)
 {
@@ -839,47 +855,45 @@ void initProjectionScreen(double _focalDist, const Affine3d &_transformation, bo
 	else
 		moveScreenAbsoluteAsynchronous(_focalDist,homeFocalDistance,4500);
 }
-// Initialize Optotrak for use in the experiment
+
+
+// run a method to define a vector that holds marker positions 
 void initOptotrak()
 {
-    optotrak=new Optotrak2(); //intiailize the Optotrak object
-    optotrak->setTranslation(calibration);
 
-	//define Optotrak-specific variables
-    int numMarkers=24;
-    float frameRate=85.0f;
-    float markerFreq=4600.0f;
-    //float dutyCycle=0.4f;
-    //float voltage = 7.0f;
-	float dutyCycle = 0.66f;
-	float voltage = 10.0f;
+	optotrak.setTranslation(calibration);
 
-	// run the intiailization method for the Optotrak, checking to see if ever (if == 0) and catch the error if so
-    if ( optotrak->init("C:/cncsvisiondata/camerafiles/Aligned20111014",numMarkers, frameRate, markerFreq, dutyCycle,voltage) != 0)
-    {   cerr << "Something during Optotrak initialization failed, press ENTER to continue. A error log has been generated, look \"opto.err\" in this folder" << endl;
-        cin.ignore(1E6,'\n');
-        exit(0);
-    }
+	if (optotrak.init(LastAlignedFile, OPTO_NUM_MARKERS, OPTO_FRAMERATE, OPTO_MARKER_FREQ, OPTO_DUTY_CYCLE, OPTO_VOLTAGE) != 0)
+	{
+		cerr << "Something during Optotrak initialization failed, press ENTER to continue. A error log has been generated, look \"opto.err\" in this folder" << endl;
+		cin.ignore(1E6, '\n');
+		exit(0);
+	}
 
-    // Read 10 frames of coordinates and fill the markers vector
-    for (int i=0; i<10; i++)
-    {
-        updateTheMarkers();
-    }
+	for (int i = 0; i < 10; i++) {
+		updateTheMarkers();
+	}
+
 }
-// run a method to define a vector that holds marker positions 
+
 void updateTheMarkers()
 {
-	optotrak->updateMarkers();
-	markers = optotrak->getAllMarkers();
+	optotrak.updateMarkers();
+	markers = optotrak.getAllMarkers();
+
+	for (int i = 1; i <= OPTO_NUM_MARKERS; i++)
+	{
+		markers.at(i).p = rotationM * markers.at(i).p;
+	}
 
 }
 // Initialize motors for moving screen around
 void initMotors()
 {
 	//specify the speed for (objects,screen)
-		if(resetScreen_betweenRuns){
-		homeEverything(5000,4500);}
+	if(resetScreen_betweenRuns){
+		homeEverything(5000,4500);
+	}
 
 }
 
@@ -904,8 +918,8 @@ void initRendering()
 	glLineWidth(1.5);
 
 	//texture-only
-	glEnable(GL_MULTISAMPLE);
-	glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+	//glEnable(GL_MULTISAMPLE);
+	//glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
 
 
 }
@@ -1021,8 +1035,8 @@ void drawGLScene()
 		glDrawBuffer(GL_BACK_RIGHT);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0,0.0,0.0,1.0);
-		cam.setEye(eyeLeft);
 
+		cam.setEye(eyeRight); 
 		drawStimulus();
 		//drawPanel_Leye(true, display_distance_jittered_std, depth_std_disp);
 		drawInfo();
@@ -1032,8 +1046,8 @@ void drawGLScene()
 		glDrawBuffer(GL_BACK_LEFT);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0,0.0,0.0,1.0);
-		cam.setEye(eyeRight); 
 		
+		cam.setEye(eyeLeft);		
 
 		drawStimulus();
 		//drawPanel_Reye(true, display_distance_jittered_std, depth_std_disp);
@@ -1129,9 +1143,7 @@ void drawInfo()
 				}else{
 					glColor3fv(glRed);
 					text.draw("Break time! Press + to continue");
-
-					if (abs(mirrorAlignment - 45.0) > 0.2)
-						text.draw("# !!!!Mirror Alignment = " + stringify<double>(mirrorAlignment));
+					text.draw("# !!!!Mirror Alignment = " + stringify<double>(mirrorAlignment));
 				}
 				break;
 
@@ -1265,9 +1277,10 @@ void initTrial()
 
 	texnum_std = rand() % 50 + 1;
 	texnum_cmp = rand() % 50 + 1;
-	if(texnum_cmp == texnum_cmp){
-		texnum_cmp = rand() % 50 + 1;
-	}
+
+	//if(texnum_cmp == texnum_cmp){
+	//	texnum_cmp = rand() % 50 + 1;
+	//}
 
 	amb_intensity_std = adjustAmbient(depth_std_text, max_intensity, 1.0, 0.6, 20, 40);
 	amb_intensity_cmp = adjustAmbient(depth_cmp, max_intensity, 1.0, 0.6, 20, 40);
@@ -1275,6 +1288,8 @@ void initTrial()
 	trial_timer.reset();				
 	trial_timer.start();
 	ElapsedTime = 0;
+	TimerFrameCnt = 0;
+	last_timer_frame_cnt = 0;
 
 	current_stage = trial_fixate_first;	
 }
@@ -1291,10 +1306,13 @@ void onlineTrial(){
 	case trial_fixate_first:
 		
 		ElapsedTime = trial_timer.getElapsedTimeInMilliSec();
+		//TimerFrameCnt++;
 
 		if (ElapsedTime > fixateTime) {
+		//if (TimerFrameCnt > fixateFrameCnt) {
 			beepOk(19);
-			lastTimeStamp = trial_timer.getElapsedTimeInMilliSec();			
+			lastTimeStamp = trial_timer.getElapsedTimeInMilliSec();		
+			//last_timer_frame_cnt = TimerFrameCnt;
 			current_stage = trial_present_first;
 			
 		}
@@ -1303,9 +1321,12 @@ void onlineTrial(){
 	case trial_present_first:
 
 		ElapsedTime = trial_timer.getElapsedTimeInMilliSec();
+		//TimerFrameCnt++;
 
-		if ( (ElapsedTime - lastTimeStamp) > viewTime) {
-			lastTimeStamp = trial_timer.getElapsedTimeInMilliSec();
+		if ((ElapsedTime - lastTimeStamp) > (viewTime)) {
+		//if ( (TimerFrameCnt - last_timer_frame_cnt) > viewFrameCnt) {
+			lastTimeStamp = trial_timer.getElapsedTimeInMilliSec();		
+			//last_timer_frame_cnt = TimerFrameCnt;
 			current_stage = trial_fixate_second;
 		}
 		break;
@@ -1313,10 +1334,13 @@ void onlineTrial(){
 	case trial_fixate_second:
 
 		ElapsedTime = trial_timer.getElapsedTimeInMilliSec();
+		//TimerFrameCnt++;
 
-		if ((ElapsedTime - lastTimeStamp) > (fixateTime)) {			
+		if ((ElapsedTime - lastTimeStamp) > (fixateTime)) {
+		//if ( (TimerFrameCnt - last_timer_frame_cnt) > fixateFrameCnt){
 			beepOk(20);
-			lastTimeStamp = trial_timer.getElapsedTimeInMilliSec();
+			lastTimeStamp = trial_timer.getElapsedTimeInMilliSec();		
+			//last_timer_frame_cnt = TimerFrameCnt;
 			current_stage = trial_present_second;
 		}
 		break;
@@ -1324,8 +1348,12 @@ void onlineTrial(){
 	case trial_present_second:
 
 		ElapsedTime = trial_timer.getElapsedTimeInMilliSec();
+		//TimerFrameCnt++;
+
 		if ((ElapsedTime - lastTimeStamp) > (viewTime)){
-			lastTimeStamp = trial_timer.getElapsedTimeInMilliSec();
+		//if ( (TimerFrameCnt - last_timer_frame_cnt) > viewFrameCnt) {
+			lastTimeStamp = trial_timer.getElapsedTimeInMilliSec();		
+			//last_timer_frame_cnt = TimerFrameCnt;
 			current_stage = trial_respond;
 		}
 		break;
@@ -1450,7 +1478,7 @@ void handleKeypress(unsigned char key, int x, int y)
 				depth_std_text = depth_std_text + depth_inc;
 				depth_std_disp = depth_std_text;
 				amb_intensity_std = adjustAmbient(depth_std_text, max_intensity, 1.0, 0.6, 20, 40);
-				initPreviewStimulus(depth_std_text, depth_std_disp);
+				initPreviewStimulus(depth_std_text, depth_std_text);
 			}else if(current_stage == trial_respond){
 
 				responseTime = trial_timer.getElapsedTimeInMilliSec() - lastTimeStamp;
@@ -1509,6 +1537,27 @@ void handleKeypress(unsigned char key, int x, int y)
 
 		///////////////////////////////////////////////
 		// key presses for adjusting stimulus previe
+		case '4':
+			if (current_stage == stimulus_preview) {
+
+				if (depth_std_text > depth_inc)
+					depth_std_text = depth_std_text - depth_inc;
+
+				initPreviewStimulus(depth_std_text, depth_std_disp);
+
+			}
+			break;
+
+		case '5':
+			if (current_stage == stimulus_preview) {
+
+				depth_std_text = depth_std_text + depth_inc;
+
+				initPreviewStimulus(depth_std_text, depth_std_disp);
+
+			}
+			break;
+
 
 		case '7':
 			if(current_stage == stimulus_preview){
@@ -1516,8 +1565,7 @@ void handleKeypress(unsigned char key, int x, int y)
 				if (depth_std_disp > depth_inc)
 					depth_std_disp = depth_std_disp - depth_inc;
 
-				//lightDir_z = lightDir_z - 0.1;
-				//initPreviewStimulus(depth_std_text, depth_std_disp);
+				initPreviewStimulus(depth_std_text, depth_std_disp);
 				
 			}
 			break;
@@ -1527,8 +1575,7 @@ void handleKeypress(unsigned char key, int x, int y)
 				
 				depth_std_disp = depth_std_disp + depth_inc;
 
-				//lightDir_z = lightDir_z + 0.1;
-				//initPreviewStimulus(depth_std_text, depth_std_disp);
+				initPreviewStimulus(depth_std_text, depth_std_disp);
 				
 			}
 			break;
@@ -1548,58 +1595,58 @@ void beepOk(int tone)
 	{
 
 	case 1: //high pitch beep
-		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\beep-8_lowpass.wav", NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\beep-8_lowpass.wav", NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
 	case 4: //mellow and good for trials
-		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\beep-440-pluck.wav", NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\beep-440-pluck.wav", NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
 	case 2: //reject like buzz
-		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\beep-10.wav", NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\beep-10.wav", NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
 	case 3: //reject short
-		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\beep-reject.wav", NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\beep-reject.wav", NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
 	case 5: //mellow and good for trials
-		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\beep-highBubblePop.wav", NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\beep-highBubblePop.wav", NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
 	case 6: //mellow and good for trials
-		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\beep-lowBubblePop.wav", NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\beep-lowBubblePop.wav", NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
 	case 8: //spoken mirror
-		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\spoken-mirror.wav", NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\spoken-mirror.wav", NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
 	case 15:
-		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\beep-rising.wav",
+		PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\beep-rising.wav",
 			NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
 	case 16:
-		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\beep-falling.wav",
+		PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\beep-falling.wav",
 			NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
 	case 17:
-	PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\beep-440-pluck-5below.wav",
+	PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\beep-440-pluck-5below.wav",
 		NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
 	case 18: // light click
-	PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\beep-click3MS.wav",
+	PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\beep-click3MS.wav",
 		NULL, SND_FILENAME | SND_ASYNC);
 	break;
 
 	case 19:
-		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\spoken-one.wav", NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\spoken-one.wav", NULL, SND_FILENAME | SND_ASYNC);
 		break;
 	case 20:
-		PlaySound((LPCSTR) "C:\\cygwin\\home\\visionlab\\workspace\\cncsvision\\data\\beep\\spoken-two.wav", NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound((LPCSTR) "C:\\cncsvision\\data\\beep\\spoken-two.wav", NULL, SND_FILENAME | SND_ASYNC);
 	}
 	return;
 }
@@ -1607,7 +1654,7 @@ void beepOk(int tone)
 void idle()
 {
 	onlineTrial();
-	check_apparatus_alignment();
+	//check_apparatus_alignment();
 	//ElapsedTime = trial_timer.getElapsedTimeInMilliSec();
 }
 
@@ -1664,7 +1711,7 @@ int LoadGLTextures()  // Load PNG And Convert To Textures
 		std::stringstream ss;
 		ss << i;
 
-		string texturePath = "fall16-ailin-stimulusTest/0/polkadots" + ss.str() + ".png";
+		string texturePath = "C:/cncsvision/experimentsbrown/ShapeConstancy/textures/polkadots/0/polkadots" + ss.str() + ".png";
 		 loaded_textures[i] = SOIL_load_OGL_texture
 		(
 			texturePath.c_str(),
@@ -1687,13 +1734,15 @@ int main(int argc, char*argv[])
 	// initializing glut (to use OpenGL)
 	glutInit(&argc, argv);
 
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STEREO | GLUT_MULTISAMPLE);
+	//glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STEREO | GLUT_MULTISAMPLE);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STEREO);
 
 	glutGameModeString("1024x768:32@85"); //resolution  
 	glutEnterGameMode();
 	glutFullScreen();
 	
 	// initializes optotrak and velmex motors
+	initRotationM();
 	initOptotrak();
 	initMotors();
 	
