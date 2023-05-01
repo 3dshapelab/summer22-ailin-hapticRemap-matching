@@ -1,0 +1,39 @@
+# Comments start with #
+# If subjectName is "junk" overwrites
+# Specify BaseDir with the backslash as follows
+#the values for each subject are written in this file
+BaseDir: dataset\junk\
+
+####### INPUT ########
+SubjectName: aa1
+Session: 2
+IOD: 65.5 # Inter-ocular distance (between the pupils)
+dispDepth: -400
+
+######################
+# number of repetitions
+Repetitions: 1 # this number does not matter
+RandomizeWithoutConsecutive: 1
+# randomize levels of factors (1) or not (0)
+Randomize: 1
+
+#########################################
+# Here follows the list of all factors, they all start with "f"
+#########################################
+fstdDepth: 32
+fstdDepthDelta: -4 4
+#########################################
+# Here follows the list of all staircase, they all start with "s"
+#########################################
+sStairNumber: 2
+sStairStartStates: 24,40
+sStairAscending: 1,0
+sStairCorrectAnswers: 1,1
+sStairMaxInversions: 14,14
+sStairMaxTrials: 120,120
+sStairPositiveStep: 6,6,3,3,1.5,1.5,1.5
+sStairNegativeStep: 6,6,3,3,1.5,1.5,1.5
+sStairClampLower: 10
+sStairClampUpper: 50
+sStairMaxClampHits: 8
+
